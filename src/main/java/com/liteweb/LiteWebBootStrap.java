@@ -25,7 +25,8 @@ public class LiteWebBootStrap {
         long time=System.currentTimeMillis();
         logger.info("Server is creating...");
         BaseServices baseServices=new BaseServices(LiteWebConfig.host);
-        new SocketServiceServiceScanner().Deploy(baseServices.createHttp(8080),baseServices.createHttps(8081));
+        new SocketServiceServiceScanner().Deploy(baseServices.createHttp(LiteWebConfig.http_port)
+                ,baseServices.createHttps(LiteWebConfig.https_port));
         new ServletRegisterScanner().loadServlet(clazz);
         logger.info("Server is started in "+(System.currentTimeMillis()-time)+"ms");
     }

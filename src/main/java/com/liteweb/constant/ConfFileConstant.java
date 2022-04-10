@@ -3,7 +3,8 @@ package com.liteweb.constant;
 public class ConfFileConstant {
     public static final String CONF_FILE_NAME = "liteWeb.properties";
     public static final String FILE_COME_MODEL="user.dir";
-    public static final String OPERATION_PORT = "operation.port";
+    public static final String OPERATION_HTTP_PORT = "operation.http.port";
+    public static final String OPERATION_HTTPS_PORT = "operation.https.port";
     public static final String OPERATION_MODEL_NAME  = "operation.mode";
     public static final String SERVICE_CORE_THREADS = "operation.service.core.threads";
     public static final String SERVICE_MAX_THREADS = "operation.service.max.threads";

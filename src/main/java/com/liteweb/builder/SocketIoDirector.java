@@ -31,7 +31,7 @@ public class SocketIoDirector {
         SocketService socketService=serviceFactory.production(socketIoBuilder.buildChannel(inetSocketAddress));
         //加载通信管道
         socketIoBuilder.loadingIoSocket(socketService);
-        logger.info(serviceFactory.name+"服务组建结束--->"+ "端口："+ inetSocketAddress.getPort() + LiteWebContext.getInstance().getServiceRegister().getServiceCount());
+        logger.info(serviceFactory.name+"服务组建结束--->"+ "端口："+ inetSocketAddress.getPort());
         return socketService;
     }
 }

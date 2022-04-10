@@ -21,17 +21,13 @@ public class RunTimeConfig extends ReadConfig{
     public static final TimeUnit keepAlive_timeUtil=RunTimeConstant.TIME_UNIT;
     private static final RunTimeConfig runTimeConfig=new RunTimeConfig();
     static {
-        Integer[] values=runTimeConfig.loadConfInt(0,7,ConfFileConstant.SERVICE_CORE_THREADS
-                ,ConfFileConstant.SERVICE_MAX_THREADS,ConfFileConstant.SERVLET_CORE_THREADS
-                ,ConfFileConstant.SERVLET_MAX_THREADS,ConfFileConstant.SERVICE_KEEPALIVE_TIME
-                ,ConfFileConstant.SERVLET_KEEPALIVE_TIME,ConfFileConstant.SERVLET_HEADER_LENGTH);
-        service_core=values[0];
-        service_max=values[1];
-        servlet_core=values[2];
-        servlet_max=values[3];
-        service_keepAlive=values[4];
-        servlet_keepAlive=values[5];
-        servlet_header_length=values[6];
+        service_core=runTimeConfig.loadConfInt(ConfFileConstant.SERVICE_MAX_THREADS,0);
+        service_max=runTimeConfig.loadConfInt(ConfFileConstant.SERVLET_CORE_THREADS,1);
+        servlet_core=runTimeConfig.loadConfInt(ConfFileConstant.SERVLET_MAX_THREADS,2);
+        servlet_max=runTimeConfig.loadConfInt(ConfFileConstant.SERVICE_KEEPALIVE_TIME,3);
+        service_keepAlive=runTimeConfig.loadConfInt(ConfFileConstant.SERVLET_KEEPALIVE_TIME,4);
+        servlet_keepAlive=runTimeConfig.loadConfInt(ConfFileConstant.SERVLET_HEADER_LENGTH,5);
+        servlet_header_length=runTimeConfig.loadConfInt(ConfFileConstant.SERVICE_CORE_THREADS,6);
     }
 
     @Override

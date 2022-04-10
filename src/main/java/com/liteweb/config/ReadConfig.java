@@ -9,20 +9,11 @@ import java.util.Arrays;
  */
 public abstract class ReadConfig {
     abstract String[] defaultValue();
-    String[] loadConf(int start,int limit,String... t){
-        String[] strings=new String[limit-start];
-        for (int i = start; i < limit; i++) {
-            String now = PropertiesFileUtil.getPropertiesStr(t[i-start]);
-            strings[i-start] = now==null||now.isEmpty() ? defaultValue()[i]:now;
-        }
-        return strings;
+    String loadConf(String key,int index){
+        String now = PropertiesFileUtil.getPropertiesStr(key);
+        return now==null||now.isEmpty() ? defaultValue()[index] : now;
     }
-    Integer[] loadConfInt(int start,int limit,String... t){
-        String[] strings = loadConf(start,limit,t);
-        Integer[] integers = new Integer[strings.length];
-        for (int i = 0; i < strings.length; i++) {
-            integers[i]=Integer.parseInt(strings[i]);
-        }
-        return integers;
+    Integer loadConfInt(String key,int index){
+        return Integer.parseInt(loadConf(key,index));
     }
 }
