@@ -1,3 +1,4 @@
+com\liteweb\anno\JsonRest.class
 com\liteweb\service\HttpsService$HttpServletConnectorProxy.class
 com\liteweb\factory\PropertiesFactory.class
 com\liteweb\service\HttpsService$1.class
@@ -7,10 +8,12 @@ com\liteweb\container\FilterContainer.class
 com\liteweb\exception\ServerException.class
 com\liteweb\factory\LoggerFactory.class
 com\liteweb\service\SocketService.class
+com\liteweb\anno\EntityParameter.class
 com\liteweb\anno\FilterConf.class
 com\liteweb\service\HttpsService$Decor.class
 com\liteweb\util\FileUtil.class
 com\liteweb\container\Container.class
+com\liteweb\anno\StaticPageRest.class
 com\liteweb\register\ServiceRegister.class
 com\liteweb\scanner\SocketServiceServiceScanner.class
 com\liteweb\service\HttpsService.class
@@ -47,6 +50,7 @@ com\liteweb\entity\WebFilter.class
 com\liteweb\factory\BaseServices.class
 com\liteweb\exception\LiteWebException.class
 com\liteweb\config\RunTimeConfig.class
+com\liteweb\constant\HttpConstant.class
 com\liteweb\entity\Cookie.class
 com\liteweb\util\PropertiesFileUtil.class
 com\liteweb\factory\BaseServices$1.class
@@ -70,6 +74,7 @@ com\liteweb\pool\OperationModelPool.class
 com\liteweb\formatter\LogFormatter.class
 com\liteweb\builder\ServletBuilder.class
 com\liteweb\entity\HttpServletRequest.class
+com\liteweb\anno\SessionConf.class
 com\liteweb\factory\HTTPServiceFactory.class
 com\liteweb\scanner\ServiceScanner.class
 com\liteweb\container\ServletContainer.class

@@ -52,34 +52,34 @@ public class HttpMessageUtil {
         int spliceIndex=filed.indexOf(ServerConstant.HttpURLFiledSplice);
         String key=filed.substring(0,spliceIndex);
         String value=filed.substring(spliceIndex+1);
-        if(key.equals("user-agent")){
+        if(key.equalsIgnoreCase("user-agent")){
             request.setUserAgent(value);
         }
-        if(key.equals("accept")){
+        if(key.equalsIgnoreCase("accept")){
             request.setAccept(value);
         }
-        if(key.equals("accept-encoding")){
+        if(key.equalsIgnoreCase("accept-encoding")){
             request.setAcceptEncoding(value);
         }
-        if(key.equals("accept-language")){
+        if(key.equalsIgnoreCase("accept-language")){
             request.setAcceptLanguage(value);
         }
-        if(key.equals("connection")){
+        if(key.equalsIgnoreCase("connection")){
             request.setConnection(value);
         }
-        if(key.equals("content-type")){
+        if(key.equalsIgnoreCase("content-type")){
             request.setContentType(value);
         }
-        if(key.equals("content-length")){
+        if(key.equalsIgnoreCase("content-length")){
             request.setContentLength(Integer.parseInt(value));
         }
-        if(key.equals("Host")){
+        if(key.equalsIgnoreCase("Host")){
             request.setHost(value);
         }
-        if(key.equals("referer")){
+        if(key.equalsIgnoreCase("referer")){
             request.setReferer(value);
         }
-        if(key.equals("cookie")){
+        if(key.equalsIgnoreCase("cookie")){
             request.setCookieContext(cookieSplit(value,request.getHost()));
         }
     }

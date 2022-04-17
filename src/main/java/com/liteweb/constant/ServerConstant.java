@@ -11,7 +11,9 @@ public class ServerConstant {
     public static final String EqualsStr="=";
     public static final String EndStr=";";
     public static final String HttpServerVersion="HTTP/1.1";
-    public static final String SSL_PROTOCOL="TLSv1";
+    public static final String SSL_PROTOCOL="TLS";
     public static final String SSL_FILE=null;
     public static final String SSL_PASSWORD=null;
+    public static final String SSL_FILE_TRUST=null;
+    public static final String SSL_PASSWORD_TRUST=null;
 }

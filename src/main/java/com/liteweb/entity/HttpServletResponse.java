@@ -26,12 +26,17 @@ public class HttpServletResponse implements WebServlet {
     private Map<String, List<String>> header=new ConcurrentHashMap<>();
     private ByteArrayOutputStream outputStream;
     private HttpServletConnector connector;
+    private Object bodyObject=new Object();
 
     public CookieContext getCookieContext(String host) {
         if(cookieContext==null){
             cookieContext=new CookieContext(host);
         }
         return cookieContext;
+    }
+
+    public void setBodyObject(Object bodyObject) {
+        this.bodyObject = bodyObject;
     }
 
     public void setCharset(Charset charset) {
@@ -75,6 +80,10 @@ public class HttpServletResponse implements WebServlet {
             header.put(name,new ArrayList<>());
         }
         header.get(name).add(headerValue);
+    }
+
+    public Object getBodyObject() {
+        return bodyObject;
     }
 
     public List<String> getHeader(String name) {

@@ -22,6 +22,8 @@ public class LiteWebConfig extends ReadConfig{
     public static final String ssl_protocol;
     public static final String ssl_certificateFile;
     public static final String ssl_certificatePwd;
+    public static final String ssl_certificateFile_trust;
+    public static final String ssl_certificatePwd_trust;
 
     //初始化端口和host主机
     static {
@@ -30,6 +32,8 @@ public class LiteWebConfig extends ReadConfig{
         ssl_protocol=webConfig.loadConf(ConfFileConstant.SSL_PROTOCOL,2);
         ssl_certificateFile=webConfig.loadConf(ConfFileConstant.SSL_FILE,3);
         ssl_certificatePwd=webConfig.loadConf(ConfFileConstant.SSL_PASSWORD,4);
+        ssl_certificateFile_trust=webConfig.loadConf(ConfFileConstant.SSL_FILE_TRUST,5);
+        ssl_certificatePwd_trust=webConfig.loadConf(ConfFileConstant.SSL_PASSWORD_TRUST,6);
         String host1;
         try {
             host1 = InetAddress.getLocalHost().getHostAddress();
@@ -42,6 +46,7 @@ public class LiteWebConfig extends ReadConfig{
     @Override
     String[] defaultValue() {
         return new String[]{ServerConstant.HTTP_PORT+"",ServerConstant.HTTPS_PORT+"",ServerConstant.SSL_PROTOCOL
-                ,ServerConstant.SSL_FILE,ServerConstant.SSL_PASSWORD};
+                ,ServerConstant.SSL_FILE,ServerConstant.SSL_PASSWORD,ServerConstant.SSL_FILE_TRUST
+                ,ServerConstant.SSL_PASSWORD_TRUST};
     }
 }

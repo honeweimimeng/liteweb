@@ -13,6 +13,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.security.KeyStore;
+import java.security.SecureRandom;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
@@ -21,6 +25,7 @@ import java.util.logging.Logger;
  */
 public class HttpsService extends HttpService{
     private static final Logger logger= LoggerFactory.createInfo("HttpsServlet预处理");
+    private static final Logger hanShake_logger= LoggerFactory.createWarning("HttpsService握手警告");
     private long start;
     private SSLEngine engine;
 
@@ -36,6 +41,7 @@ public class HttpsService extends HttpService{
     @Override
     public SocketChannel Accept(boolean isBlocking, SelectionKey key, Selector selector) throws Exception {
         SocketChannel socketChannel = super.Accept(isBlocking, key, selector);
+        socketChannel.configureBlocking(isBlocking);
         initSSL(socketChannel);
         return socketChannel;
     }
@@ -79,7 +85,8 @@ public class HttpsService extends HttpService{
         KeyManagerFactory kmf = KeyManagerFactory.getInstance ( "SunX509" );
         kmf.init(ks,password);
         SSLContext sslContext = SSLContext.getInstance ( LiteWebConfig.ssl_protocol );
-        sslContext.init ( kmf.getKeyManagers (), null, null );
+        sslContext.init ( kmf.getKeyManagers (), null,
+                new SecureRandom());
         return sslContext;
     }
 
@@ -96,7 +103,11 @@ public class HttpsService extends HttpService{
         ByteBuffer inApp = ByteBuffer.allocateDirect(appSize+10);
         ByteBuffer inNet=ByteBuffer.allocateDirect(netSize);
         engine.beginHandshake();
-        doHandShake(engine,channel,inApp,inNet);
+        try {
+            doHandShake(engine,channel,inApp,inNet);
+        }catch (Exception e){
+            hanShake_logger.warning(e.getMessage());
+        }
     }
 
     /**

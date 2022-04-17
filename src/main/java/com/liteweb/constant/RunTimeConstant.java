@@ -19,4 +19,5 @@ public class RunTimeConstant {
     //请求头最大长度,8K
     public static final Integer MAX_HEADER_LENGTH=8192;
     public static final String NULL_STR=" ";
+    public static final String SESSION_KEY="LITE_WEB_SESSION";
 }

@@ -16,4 +16,6 @@ public class ConfFileConstant {
     public static final String SSL_PROTOCOL="operation.ssl_protocol";
     public static final String SSL_FILE="operation.ssl_file";
     public static final String SSL_PASSWORD="operation.ssl_password";
+    public static final String SSL_FILE_TRUST="operation.ssl_file.trust";
+    public static final String SSL_PASSWORD_TRUST="operation.ssl_password.trust";
 }

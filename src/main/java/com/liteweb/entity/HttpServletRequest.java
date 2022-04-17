@@ -41,9 +41,15 @@ public class HttpServletRequest implements WebServlet {
 
     private ByteArrayInputStream bodyStream;
 
+    private Object bodyEntity;
+
     private Charset charset= StandardCharsets.UTF_8;
 
     private HttpServletConnector connector;
+
+    public void setBodyEntity(Object bodyEntity) {
+        this.bodyEntity = bodyEntity;
+    }
 
     public void setCharset(Charset charset) {
         this.charset = charset;
@@ -179,6 +185,10 @@ public class HttpServletRequest implements WebServlet {
 
     public ServletConnector getConnector() {
         return connector;
+    }
+
+    public Object getBodyEntity() {
+        return bodyEntity;
     }
 
     @Override

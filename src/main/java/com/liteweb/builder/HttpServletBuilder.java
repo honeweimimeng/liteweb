@@ -51,7 +51,11 @@ public class HttpServletBuilder extends ServletBuilder{
             String data=new String(header, request.getCharset());
             //读取请求头
             readHeader(data,request);
-            String bodyData=data.substring(data.indexOf(ServerConstant.HttpNoneLineTag));
+            int body_splice_index=data.indexOf(ServerConstant.HttpNoneLineTag);
+            if(body_splice_index<0){
+                throw new RuntimeException("报文错误，缺少参数");
+            }
+            String bodyData=data.substring(body_splice_index);
             if(resSize<RunTimeConfig.servlet_header_length){
                 //小于最大头部报文限制，无后续内容，设置请求体内容
                 if(!bodyData.isEmpty()){
@@ -82,6 +86,9 @@ public class HttpServletBuilder extends ServletBuilder{
      */
     private void readHeader(String data, HttpServletRequest request){
         int firstIndex=data.indexOf(ServerConstant.HttpNoneLineTag);
+        if(firstIndex<0){
+            throw new RuntimeException("报文错误，缺少参数");
+        }
         String headerData=data.substring(0,firstIndex);
         String[] filed_arr=headerData.split(ServerConstant.HttpLineTag);
         boolean isFirstLine=true;
