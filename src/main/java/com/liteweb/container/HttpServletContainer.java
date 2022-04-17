@@ -12,14 +12,11 @@ import com.liteweb.entity.*;
 import com.liteweb.enums.HttpMethodName;
 import com.liteweb.enums.HttpStatusCode;
 import com.liteweb.util.ResponseUtil;
-
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.text.Annotation;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Locale;
 
 /**
@@ -36,6 +33,14 @@ public class HttpServletContainer extends ServletContainer{
         HttpServletRequest http_request = (HttpServletRequest) request;
         HttpServletResponse http_response = (HttpServletResponse) response;
         HttpFilter httpFilter=(HttpFilter) filter;
+        if(http_request.getRequestURI().contains(".")){
+            try {
+                http_response.setOutputStream(ResponseUtil.responseResourceFile(http_request.getRequestURI()));
+            }catch (Exception e){
+                http_response.setCode(HttpStatusCode.NOTFOUND.getCode());
+            }
+            return;
+        }
         WebServlet webServlet = LiteWebContext.getInstance().getServletRegister()
                 .findByPath(http_request.getRequestURI());
         if(!(webServlet instanceof HttpServlet)){

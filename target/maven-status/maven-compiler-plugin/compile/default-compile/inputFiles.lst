@@ -10,6 +10,7 @@ C:\Users\Hone\Desktop\LiteWeb\src\main\java\com\liteweb\connector\HttpServletCon
 C:\Users\Hone\Desktop\LiteWeb\src\main\java\com\liteweb\formatter\LogFormatter.java
 C:\Users\Hone\Desktop\LiteWeb\src\main\java\com\liteweb\factory\PropertiesFactory.java
 C:\Users\Hone\Desktop\LiteWeb\src\main\java\com\liteweb\container\SessionContainer.java
+C:\Users\Hone\Desktop\LiteWeb\src\main\java\com\liteweb\anno\StaticPageRest.java
 C:\Users\Hone\Desktop\LiteWeb\src\main\java\com\liteweb\anno\SessionConf.java
 C:\Users\Hone\Desktop\LiteWeb\src\main\java\com\liteweb\entity\HttpServlet.java
 C:\Users\Hone\Desktop\LiteWeb\src\main\java\com\liteweb\service\HttpsService.java
@@ -33,9 +34,11 @@ C:\Users\Hone\Desktop\LiteWeb\src\main\java\com\liteweb\exception\LiteWebExcepti
 C:\Users\Hone\Desktop\LiteWeb\src\main\java\com\liteweb\util\ChannelUtil.java
 C:\Users\Hone\Desktop\LiteWeb\src\main\java\com\liteweb\enums\HttpMethodName.java
 C:\Users\Hone\Desktop\LiteWeb\src\main\java\com\liteweb\constant\ExceptionConstant.java
+C:\Users\Hone\Desktop\LiteWeb\src\main\java\com\liteweb\anno\EntityParameter.java
 C:\Users\Hone\Desktop\LiteWeb\src\main\java\com\liteweb\pool\ThreadPool.java
 C:\Users\Hone\Desktop\LiteWeb\src\main\java\com\liteweb\constant\HttpConstant.java
 C:\Users\Hone\Desktop\LiteWeb\src\main\java\com\liteweb\connector\ServletConnector.java
+C:\Users\Hone\Desktop\LiteWeb\src\main\java\com\liteweb\anno\JsonRest.java
 C:\Users\Hone\Desktop\LiteWeb\src\main\java\com\liteweb\config\RunTimeConfig.java
 C:\Users\Hone\Desktop\LiteWeb\src\main\java\com\liteweb\util\HttpMessageUtil.java
 C:\Users\Hone\Desktop\LiteWeb\src\main\java\com\liteweb\builder\SocketIoDirector.java
