@@ -8,6 +8,7 @@ public class SocketIoScanner {
             try {
                 socketIoHandler.invoke();
             }catch (Exception e){
+                e.printStackTrace();
                 throw new ServerException("SocketIO监听启动错误"+e.getMessage());
             }
         }

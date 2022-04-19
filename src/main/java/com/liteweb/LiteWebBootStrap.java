@@ -28,6 +28,6 @@ public class LiteWebBootStrap {
         new SocketServiceServiceScanner().Deploy(baseServices.createHttp(LiteWebConfig.http_port)
                 ,baseServices.createHttps(LiteWebConfig.https_port));
         new ServletRegisterScanner().loadServlet(clazz);
-        logger.info("Server is started in "+(System.currentTimeMillis()-time)+"ms");
+        logger.info("Server is started boot on "+LiteWebConfig.host+" time in "+(System.currentTimeMillis()-time)+"ms");
     }
 }

@@ -19,6 +19,9 @@ public abstract class Register<T> implements Registry<T> {
         return servlet_map.get(path);
     }
     public WebFilter findByFilterPath(String path){
+        if(path==null){
+            return null;
+        }
         //从最长路径搜索过滤器
         while (path.contains("/")){
             WebFilter webFilter = filter_map.get(path+"/*");

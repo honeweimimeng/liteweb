@@ -43,8 +43,7 @@ public class AioSocketBuilder extends SocketIoBuilder {
                     server_channel.accept(null,this);
                     //开启线程处理
                     ThreadPool.servletPool.execute(()->{
-                        socketService.Accept(result);
-                        socketService.serviceHandler().invokeToInfo(result);
+                        socketService.serviceHandler(socketService.Accept(result)).invokeToInfo(result);
                     });
                 }
 

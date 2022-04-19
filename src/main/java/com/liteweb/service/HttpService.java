@@ -9,6 +9,7 @@ import com.liteweb.entity.HttpServletRequest;
 import com.liteweb.entity.HttpServletResponse;
 import com.liteweb.factory.LoggerFactory;
 import java.nio.channels.Channel;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
@@ -19,8 +20,6 @@ import java.util.logging.Logger;
 public class HttpService extends SocketService{
     //通信管道
     private final Channel channel;
-    //Socket通信管道
-    protected Channel socketChannel;
     //服务对应包含的container
     private final ServletContainer servletContainer=new HttpServletContainer();
     //服务内部聚合的连接
@@ -48,20 +47,14 @@ public class HttpService extends SocketService{
         return channel;
     }
 
-    @Override
-    public Channel getSocketChannel() {
-        return socketChannel;
-    }
-
     /**
      * 处理socket传输信息,子组件获取Http报文,子组件处理Http行为
      * @return ServiceHandler
      */
     @Override
-    public ServiceHandler serviceHandler() {
+    public ServiceHandler serviceHandler(Object... objects) {
         return (channel)->{
             long start=System.currentTimeMillis();
-            this.socketChannel=channel;
             //获取请求报文,委派子组件完成
             HttpServletConnector httpServletConnector=new HttpServletConnector(new HttpServletBuilder(channel));
             HttpServletRequest request=realHttpHandler(httpServletConnector);
@@ -75,7 +68,7 @@ public class HttpService extends SocketService{
         HttpServletResponse response=connector.getHttpServletResponse();
         //委派给container进行行为处理
         servletContainer().disposeMessage(request,response,connector.getHttpFilter());
-        connector.response(getSocketChannel(),response.messageBuffers());
+        connector.response(connector.getSocketChannel(),response.messageBuffers());
         return request;
     }
 
@@ -90,5 +83,7 @@ public class HttpService extends SocketService{
     }
 
     @Override
-    public void Accept(Channel channel) {}
+    public Object Accept(Channel channel) {
+        return null;
+    }
 }

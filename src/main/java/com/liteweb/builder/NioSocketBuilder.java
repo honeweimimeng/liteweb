@@ -61,7 +61,7 @@ public class NioSocketBuilder extends SocketIoBuilder {
                         key.interestOps(0);
                         //开启线程处理
                         ThreadPool.servletPool.execute(()->{
-                            socketService.serviceHandler().invokeToInfo(socketChannel);
+                            socketService.serviceHandler(key.attachment()).invokeToInfo(socketChannel);
                         });
                     }
                 }

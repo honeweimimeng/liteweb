@@ -114,7 +114,6 @@ public class HttpServletResponse implements WebServlet {
     }
 
     private ByteBuffer getHeader(){
-        addHeader("Content-Length",outputStream.toByteArray().length+"");
         addHeader("Content-Type",contentType);
         addHeader("Connection","close");
         addHeader("Date",new Date().toString());

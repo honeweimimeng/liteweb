@@ -11,9 +11,17 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ResponseUtil {
-
+    private static final Map<String,String> fileTypeToContentType=new HashMap<>();
+    static {
+        fileTypeToContentType.put("css","text/css");
+        fileTypeToContentType.put("js","text/javascript");
+        fileTypeToContentType.put("png","image/png");
+        fileTypeToContentType.put("jpg","image/jpeg");
+    }
     /**
      * 响应文件
      * @param filePath 文件路径，resource下
@@ -21,6 +29,9 @@ public class ResponseUtil {
      */
     public static ByteArrayOutputStream responseResourceFile(String filePath){
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        if(filePath.startsWith("/")){
+            filePath=filePath.substring(1);
+        }
         URL url=Thread.currentThread().getContextClassLoader().getResource(filePath);
         if(url==null){
             throw new ServerException("文件未找到");
@@ -72,5 +83,10 @@ public class ResponseUtil {
             stringBuilder.append(res);
         }
         return stringBuilder.toString();
+    }
+
+    public static String getFileContentType(String fileName){
+        String contentType=fileTypeToContentType.get(fileName);
+        return contentType==null ? "text/"+fileName:contentType;
     }
 }

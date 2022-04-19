@@ -14,9 +14,13 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.ExecutionException;
 
 public class HttpServletBuilder extends ServletBuilder{
-    protected final Channel channel;
+
     public HttpServletBuilder(Channel channel){
-        this.channel=channel;
+        super(channel);
+    }
+
+    public Channel getChannel() {
+        return channel;
     }
 
     /**

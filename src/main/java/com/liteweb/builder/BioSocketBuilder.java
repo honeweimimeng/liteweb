@@ -38,8 +38,7 @@ public class BioSocketBuilder extends SocketIoBuilder {
                 socketChannel.configureBlocking(isBlocking());
                 //开启线程处理
                 ThreadPool.servletPool.execute(()->{
-                    socketService.Accept(socketChannel);
-                    socketService.serviceHandler().invokeToInfo(socketChannel);
+                    socketService.serviceHandler(socketService.Accept(socketChannel)).invokeToInfo(socketChannel);
                 });
             });
         });

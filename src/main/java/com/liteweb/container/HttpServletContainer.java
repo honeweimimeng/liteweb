@@ -17,7 +17,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * 处理http请求，执行对应的行为
@@ -33,9 +35,14 @@ public class HttpServletContainer extends ServletContainer{
         HttpServletRequest http_request = (HttpServletRequest) request;
         HttpServletResponse http_response = (HttpServletResponse) response;
         HttpFilter httpFilter=(HttpFilter) filter;
-        if(http_request.getRequestURI().contains(".")){
+        String requestURL=http_request.getRequestURI();
+        if(requestURL==null){
+            return;
+        }
+        if(requestURL.contains(".")){
             try {
-                http_response.setOutputStream(ResponseUtil.responseResourceFile(http_request.getRequestURI()));
+                http_response.setOutputStream(ResponseUtil.responseResourceFile(requestURL));
+                http_response.setContentType(ResponseUtil.getFileContentType(requestURL.substring(requestURL.indexOf(".")+1)));
             }catch (Exception e){
                 http_response.setCode(HttpStatusCode.NOTFOUND.getCode());
             }

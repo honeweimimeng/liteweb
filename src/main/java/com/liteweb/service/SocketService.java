@@ -14,8 +14,7 @@ import java.util.List;
 
 public abstract class SocketService extends BaseService{
     public abstract Channel getChannel();
-    public abstract Channel getSocketChannel();
-    public abstract ServiceHandler serviceHandler();
+    public abstract ServiceHandler serviceHandler(Object... objects);
     abstract ServletContainer servletContainer();
     abstract List<ServletConnector> servletConnectors();
     public SocketChannel Accept(boolean isBlocking, SelectionKey key, Selector selector) throws Exception {
@@ -24,5 +23,5 @@ public abstract class SocketService extends BaseService{
         socketChannel.register(selector, SelectionKey.OP_READ);
         return socketChannel;
     }
-    public abstract void Accept(Channel channel);
+    public abstract Object Accept(Channel channel);
 }

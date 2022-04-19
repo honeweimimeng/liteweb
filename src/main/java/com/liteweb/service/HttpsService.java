@@ -10,13 +10,15 @@ import com.liteweb.util.ChannelUtil;
 import javax.net.ssl.*;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.SecureRandom;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
@@ -27,29 +29,31 @@ public class HttpsService extends HttpService{
     private static final Logger logger= LoggerFactory.createInfo("HttpsServlet预处理");
     private static final Logger hanShake_logger= LoggerFactory.createWarning("HttpsService握手警告");
     private long start;
-    private SSLEngine engine;
 
     public HttpsService(Channel channel) {
         super(channel);
     }
 
     @Override
-    public ServiceHandler serviceHandler() {
-        return new Decor();
+    public ServiceHandler serviceHandler(Object... objects) {
+        return new Decor((SSLEngine) objects[0]);
     }
 
     @Override
     public SocketChannel Accept(boolean isBlocking, SelectionKey key, Selector selector) throws Exception {
-        SocketChannel socketChannel = super.Accept(isBlocking, key, selector);
+        SocketChannel socketChannel=((ServerSocketChannel)key.channel()).accept();
+        socketChannel.configureBlocking(true);
+        socketChannel.setOption(StandardSocketOptions.TCP_NODELAY, true);
+        SSLEngine engine=initSSL(socketChannel);
         socketChannel.configureBlocking(isBlocking);
-        initSSL(socketChannel);
+        socketChannel.register(selector, SelectionKey.OP_READ,engine);
         return socketChannel;
     }
 
     @Override
-    public void Accept(Channel channel){
+    public Object Accept(Channel channel){
         try {
-            initSSL(channel);
+            return initSSL(channel);
         }catch (Exception e){
             try {
                 channel.close();
@@ -65,12 +69,15 @@ public class HttpsService extends HttpService{
      * @param socketChannel 通信管道
      * @throws Exception
      */
-    private void initSSL(Channel socketChannel) throws Exception {
+    private SSLEngine initSSL(Channel socketChannel) throws Exception {
         start=System.currentTimeMillis();
-        engine=getContext().createSSLEngine();
+        SSLEngine engine=getContext().createSSLEngine();
         //服务模式
         engine.setUseClientMode(false);
+        engine.setWantClientAuth(false);
+        engine.setEnableSessionCreation(true);
         HandShake(engine,socketChannel);
+        return engine;
     }
 
     /**
@@ -100,7 +107,7 @@ public class HttpsService extends HttpService{
         SSLSession sslSession=engine.getSession();
         int appSize=sslSession.getApplicationBufferSize();
         int netSize=sslSession.getPacketBufferSize();
-        ByteBuffer inApp = ByteBuffer.allocateDirect(appSize+10);
+        ByteBuffer inApp = ByteBuffer.allocateDirect(appSize);
         ByteBuffer inNet=ByteBuffer.allocateDirect(netSize);
         engine.beginHandshake();
         try {
@@ -165,7 +172,10 @@ public class HttpsService extends HttpService{
      * 装饰器类方法增强
      */
     class Decor implements ServiceHandler {
-
+        private final SSLEngine engine;
+        public Decor(SSLEngine engine){
+            this.engine=engine;
+        }
         /**
          * 增加Https证书验证处理
          * @param channel 通信管道
@@ -173,7 +183,6 @@ public class HttpsService extends HttpService{
         @Override
         public void invokeToInfo(Channel channel) {
             try {
-                socketChannel=channel;
                 //等待握手完成
                 HttpServletConnector httpServletConnector=
                         new HttpServletConnectorProxy(new HttpBuilderProxy(channel,engine),engine);
@@ -181,11 +190,6 @@ public class HttpsService extends HttpService{
                 logger.info("Method:"+request.getMethod()+" -- Path:"+request.getRequestURI()+" -- 耗费时间："+(System.currentTimeMillis()-start)+"ms");
             }catch (Exception e){
                 e.printStackTrace();
-                try {
-                    channel.close();
-                }catch (IOException cl_e){
-                    cl_e.printStackTrace();
-                }
                 throw new ServerException("确认是否配置XXX.keystore路径以及密码,也有可能客户端未此安装证书,或访问并非安全访问");
             }
         }
@@ -281,16 +285,23 @@ public class HttpsService extends HttpService{
         @Override
         public void response(Channel channel, ByteBuffer[] messageBuffers) {
             try {
-                ByteBuffer[] messageBuffers_res=new ByteBuffer[messageBuffers.length];
-                for (int i = 0; i < messageBuffers.length; i++) {
-                    ByteBuffer byteBuffer=ByteBuffer.allocateDirect(sslEngine.getSession().getPacketBufferSize());
-                    byteBuffer.clear();
-                    sslEngine.wrap(messageBuffers[i],byteBuffer);
-                    byteBuffer.flip();
-                    messageBuffers_res[i]=byteBuffer;
+                List<ByteBuffer> list=new ArrayList<>();
+                for (ByteBuffer messageBuffer : messageBuffers) {
+                    while (messageBuffer.hasRemaining()) {
+                        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(sslEngine.getSession().getPacketBufferSize());
+                        byteBuffer.clear();
+                        sslEngine.wrap(messageBuffer, byteBuffer);
+                        byteBuffer.flip();
+                        list.add(byteBuffer);
+                    }
                 }
-                super.response(channel,messageBuffers_res);
+                ByteBuffer[] byteBuffers=new ByteBuffer[list.size()];
+                for (int i = 0; i < list.size(); i++) {
+                    byteBuffers[i]=list.get(i);
+                }
+                super.response(channel,byteBuffers);
             }catch (Exception e){
+                e.printStackTrace();
                 throw new RuntimeException("响应报文加密错误");
             }
         }

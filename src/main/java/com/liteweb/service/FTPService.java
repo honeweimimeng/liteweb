@@ -13,12 +13,7 @@ public class FTPService extends SocketService{
     }
 
     @Override
-    public Channel getSocketChannel() {
-        return null;
-    }
-
-    @Override
-    public ServiceHandler serviceHandler() {
+    public ServiceHandler serviceHandler(Object... objects) {
         return null;
     }
 
@@ -33,7 +28,7 @@ public class FTPService extends SocketService{
     }
 
     @Override
-    public void Accept(Channel channel) {
-
+    public Object Accept(Channel channel) {
+        return null;
     }
 }

@@ -12,6 +12,7 @@ import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.Channel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.SocketChannel;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -35,6 +36,7 @@ public class HttpServletConnector extends ServletConnector{
      * servlet建造者
      */
     public HttpServletConnector(HttpServletBuilder servletBuilder){
+        super(servletBuilder.getChannel());
         //查找拦截器
         httpServletRequest=(HttpServletRequest)servletBuilder.buildRequest();
         httpServletRequest.setConnector(this);
@@ -56,40 +58,92 @@ public class HttpServletConnector extends ServletConnector{
         logger.info("管道返回码"+res);
     }
 
+    /**
+     * 异步响应
+     * @param socketChannel 异步管道
+     * @param messageBuffers 缓冲区数组
+     * @return 写入大小
+     */
     protected int responseAsy(AsynchronousSocketChannel socketChannel, ByteBuffer[] messageBuffers){
-        socketChannel.write(messageBuffers,0,messageBuffers.length,30,
-                TimeUnit.SECONDS, null, new CompletionHandler<Long, Object>() {
-            @Override
-            public void completed(Long result, Object attachment) {
-                try {
-                    socketChannel.close();
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
-            }
+        ByteBuffer[][] loopBuffer=writeInBatches(messageBuffers);
+        socketChannel.write(loopBuffer[0],0,loopBuffer[0].length,30,
+                TimeUnit.SECONDS, 0, new CompletionHandler<Long, Object>() {
+                    @Override
+                    public void completed(Long result, Object attachment) {
+                        //已经写完
+                        int att=(Integer)attachment;
+                        if(++att == loopBuffer.length){
+                            try {
+                                socketChannel.close();
+                            }catch (IOException e){
+                                e.printStackTrace();
+                            }
+                            return;
+                        }
+                        socketChannel.write(loopBuffer[att],0,loopBuffer[att].length,30,TimeUnit.SECONDS,att,this);
+                    }
 
-            @Override
-            public void failed(Throwable exc, Object attachment) {
-                exc.printStackTrace();
-                try {
-                    socketChannel.close();
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
-            }
-        });
+                    @Override
+                    public void failed(Throwable exc, Object attachment) {
+                        exc.printStackTrace();
+                        try {
+                            socketChannel.close();
+                        }catch (IOException e){
+                            e.printStackTrace();
+                        }
+                    }
+                });
+        for (int i = 0; i < loopBuffer.length; i++) {
+
+        }
         return 0;
     }
 
+    /**
+     * 同步写入管道
+     * @param socketChannel 同步管道
+     * @param messageBuffers 缓冲区数组
+     * @return 写入大小
+     */
     protected int responseSyn(SocketChannel socketChannel, ByteBuffer[] messageBuffers){
+        int count=0;
         try {
-            socketChannel.write(messageBuffers);
+            ByteBuffer[][] byteBuffers=writeInBatches(messageBuffers);
+            for (ByteBuffer[] writeByteBuffer : byteBuffers) {
+                count+=socketChannel.write(writeByteBuffer);
+            }
             socketChannel.close();
         }catch (IOException e){
             e.printStackTrace();
             throw new RuntimeException("返回数据错误");
         }
-        return 0;
+        return count;
+    }
+
+    /**
+     * 对缓冲区重新规划
+     * @param messageBuffers 缓冲区数组
+     * @return 重新规划后的缓冲区数组
+     */
+    private ByteBuffer[][] writeInBatches(ByteBuffer[] messageBuffers){
+        if(messageBuffers.length>15){
+            int count=messageBuffers.length/15;
+            int remain=messageBuffers.length%15;
+            if(remain>0){
+                count+=1;
+            }
+            ByteBuffer[][] byteBuffers=new ByteBuffer[count][];
+            for (int i = 0; i <count ; i++) {
+                int size = i+1==count&&remain>0 ?remain:15;
+                ByteBuffer[] byteBuffersArrInner=new ByteBuffer[size];
+                for (int j = 0; j < 15&&i*15+j<messageBuffers.length; j++) {
+                    byteBuffersArrInner[j]=messageBuffers[i*15+j];
+                }
+                byteBuffers[i]=byteBuffersArrInner;
+            }
+            return byteBuffers;
+        }
+        return new ByteBuffer[][]{messageBuffers};
     }
 
     public HttpFilter getHttpFilter() {
