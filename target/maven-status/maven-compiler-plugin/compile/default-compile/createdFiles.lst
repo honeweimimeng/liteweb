@@ -50,6 +50,7 @@ com\liteweb\entity\WebFilter.class
 com\liteweb\factory\BaseServices.class
 com\liteweb\exception\LiteWebException.class
 com\liteweb\config\RunTimeConfig.class
+com\liteweb\LiteWebBootStrap$ServiceLoader.class
 com\liteweb\constant\HttpConstant.class
 com\liteweb\entity\Cookie.class
 com\liteweb\util\PropertiesFileUtil.class

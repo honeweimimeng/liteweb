@@ -41,8 +41,13 @@ public class HttpServletContainer extends ServletContainer{
         }
         if(requestURL.contains(".")){
             try {
+                String lastName=requestURL.substring(requestURL.lastIndexOf(".")+1);
                 http_response.setOutputStream(ResponseUtil.responseResourceFile(requestURL));
-                http_response.setContentType(ResponseUtil.getFileContentType(requestURL.substring(requestURL.indexOf(".")+1)));
+                http_response.setContentType(ResponseUtil.getFileContentType(lastName));
+                if(ResponseUtil.isDownLoadFile(lastName)){
+                    String fileName=requestURL.substring(requestURL.lastIndexOf("/")+1);
+                    http_response.addHeader("Content-Disposition","attachement;filename=" + fileName);
+                }
             }catch (Exception e){
                 http_response.setCode(HttpStatusCode.NOTFOUND.getCode());
             }

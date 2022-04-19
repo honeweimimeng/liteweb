@@ -16,11 +16,14 @@ import java.util.Map;
 
 public class ResponseUtil {
     private static final Map<String,String> fileTypeToContentType=new HashMap<>();
+    private static final Map<String,String> fileTypeToDownLoadType=new HashMap<>();
     static {
         fileTypeToContentType.put("css","text/css");
         fileTypeToContentType.put("js","text/javascript");
         fileTypeToContentType.put("png","image/png");
         fileTypeToContentType.put("jpg","image/jpeg");
+        fileTypeToDownLoadType.put("jar","");
+        fileTypeToDownLoadType.put("zip","");
     }
     /**
      * 响应文件
@@ -39,21 +42,30 @@ public class ResponseUtil {
         String path=url.getPath();
         try {
             FileInputStream fileInputStream=new FileInputStream(path);
-            BufferedInputStream reader=new BufferedInputStream(fileInputStream);
-            byte[] now_byte=new byte[512];
-            int size=0;
-            while ((size=reader.read(now_byte)) != -1){
-                if(size!=512){
-                    outputStream.write(Arrays.copyOf(now_byte,size));
-                    break;
-                }
-                outputStream.write(now_byte);
-                now_byte=new byte[512];
-            }
+            realReadAndResponse(fileInputStream,outputStream);
         } catch (IOException e) {
-            e.printStackTrace();
+            InputStream fileInputStream=Thread.currentThread().getContextClassLoader().getResourceAsStream(filePath);
+            try {
+                realReadAndResponse(fileInputStream,outputStream);
+            }catch (IOException e_not){
+                e_not.printStackTrace();
+            }
         }
         return outputStream;
+    }
+
+    private static void realReadAndResponse(InputStream inputStream,ByteArrayOutputStream outputStream) throws IOException{
+        BufferedInputStream reader=new BufferedInputStream(inputStream);
+        byte[] now_byte=new byte[512];
+        int size;
+        while ((size=reader.read(now_byte)) != -1){
+            if(size!=512){
+                outputStream.write(Arrays.copyOf(now_byte,size));
+                break;
+            }
+            outputStream.write(now_byte);
+            now_byte=new byte[512];
+        }
     }
 
     /**
@@ -88,5 +100,9 @@ public class ResponseUtil {
     public static String getFileContentType(String fileName){
         String contentType=fileTypeToContentType.get(fileName);
         return contentType==null ? "text/"+fileName:contentType;
+    }
+
+    public static boolean isDownLoadFile(String fileName){
+        return fileTypeToDownLoadType.get(fileName)!=null;
     }
 }

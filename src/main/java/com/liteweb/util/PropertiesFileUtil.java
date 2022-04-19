@@ -2,6 +2,7 @@ package com.liteweb.util;
 
 import com.liteweb.exception.FileFoundException;
 import com.liteweb.exception.LoadPropertiesException;
+import com.liteweb.factory.LoggerFactory;
 import com.liteweb.factory.PropertiesFactory;
 import com.liteweb.constant.ConfFileConstant;
 import com.liteweb.constant.OperationConstant;
@@ -10,15 +11,18 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 public class PropertiesFileUtil {
+    private static final Logger logger= LoggerFactory.createException("PropertiesLoad");
+    private static final Logger logger_success= LoggerFactory.createInfo("PropertiesLoadSuucess");
     private static final Properties properties;
 
     //获取单例工厂的Properties引用
     static {
         properties = PropertiesFactory.createProperties();
         if(properties==null){
-            throw new FileFoundException("资源目录下无"+ConfFileConstant.CONF_FILE_NAME+"配置文件");
+            logger.severe("资源目录下无"+ConfFileConstant.CONF_FILE_NAME+"配置文件");
         }
     }
 
@@ -27,30 +31,11 @@ public class PropertiesFileUtil {
      * @return 运行模式 OperationConstant.XX_RUN_MODEL
      */
     public static String getOperationModel() {
-        String run_mode_conf = properties.getProperty(ConfFileConstant.OPERATION_MODEL_NAME);
+        String run_mode_conf = properties ==null ? null:properties.getProperty(ConfFileConstant.OPERATION_MODEL_NAME);
         if(run_mode_conf==null||run_mode_conf.isEmpty()){
-            return OperationConstant.AIO_RUN_MODEL;
+            return OperationConstant.NIO_RUN_MODEL;
         }
         return run_mode_conf;
-    }
-
-    /**
-     * 获取int属性
-     * @param name
-     * 属性名称
-     * @return Integer
-     */
-    public static Integer getPropertiesInt(String name){
-        Integer res=null;
-        String str_res=properties.getProperty(name);
-        if(str_res!=null&&!str_res.isEmpty()){
-            try {
-                res=Integer.parseInt(str_res);
-            }catch (NumberFormatException e){
-                throw new LoadPropertiesException("加载属性"+name+"错误，不是合适的Int类型");
-            }
-        }
-        return res;
     }
 
     /**
@@ -60,7 +45,7 @@ public class PropertiesFileUtil {
      * @return String
      */
     public static String getPropertiesStr(String name){
-        return properties.getProperty(name);
+        return properties==null ? null:properties.getProperty(name);
     }
 
     /**
@@ -70,17 +55,34 @@ public class PropertiesFileUtil {
      * @return Properties
      */
     public static Properties getProperties(String fileName) {
-        //先读取config目录的，没有再加载classpath的
+        //先读取最外层目录的，JAR同级
         try {
-            String path = System.getProperty(ConfFileConstant.FILE_COME_MODEL) +
-                    File.separator+"src"+File.separator+"main"+File.separator+"resources"+File.separator;
-            Properties properties = new Properties();
-            InputStream in = new FileInputStream(path + fileName);
-            properties.load(in);
+            Properties properties=realGetProperties(System.getProperty(ConfFileConstant.FILE_COME_MODEL) + File.separator + fileName);
+            logger_success.info("成功加载配置文件："+fileName+"，来自=>外部资源");
             return properties;
         } catch (IOException e) {
-            //无加载文件
-            return null;
+            //无加载文件，读取资源目录下的
+            try {
+                Properties properties=realGetProperties(System.getProperty(ConfFileConstant.FILE_COME_MODEL) +
+                        File.separator+"src"+File.separator+"main"+File.separator+"resources"+File.separator + fileName);
+                logger_success.info("成功加载配置文件："+fileName+"，来自=>内部资源文件夹");
+                return properties;
+            }catch (IOException not){
+                return null;
+            }
         }
+    }
+
+    /**
+     * 通过路径拿到对象
+     * @param path 路径
+     * @return Properties对象
+     * @throws IOException 未找到文件
+     */
+    private static Properties realGetProperties(String path) throws IOException{
+        Properties properties = new Properties();
+        InputStream in = new FileInputStream(path);
+        properties.load(in);
+        return properties;
     }
 }

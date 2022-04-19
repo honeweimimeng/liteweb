@@ -13,6 +13,7 @@ public class ConfFileConstant {
     public static final String SERVICE_KEEPALIVE_TIME = "operation.service.keepAliveTime";
     public static final String SERVLET_KEEPALIVE_TIME = "operation.servlet.keepAliveTime";
     public static final String SERVLET_HEADER_LENGTH="operation.servlet.servletHeaderLength";
+    public static final String SSL_OPEN="operation.open.ssl";
     public static final String SSL_PROTOCOL="operation.ssl_protocol";
     public static final String SSL_FILE="operation.ssl_file";
     public static final String SSL_PASSWORD="operation.ssl_password";
