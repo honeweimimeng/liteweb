@@ -2,16 +2,19 @@ package com.liteweb.register;
 
 import com.liteweb.entity.WebServlet;
 
+/**
+ * @author Hone
+ */
 public class ServletRegister<T> extends Register<T> {
     @Override
-    public void Register(String key,T t) {
+    public void register(String key, T t) {
         if(t instanceof WebServlet){
-            servlet_map.put(key,(WebServlet) t);
+            SERVLET_MAP.put(key,(WebServlet) t);
         }
     }
 
     @Override
-    public void Cancellation(String key) {
-        servlet_map.remove(key);
+    public void cancellation(String key) {
+        SERVLET_MAP.remove(key);
     }
 }

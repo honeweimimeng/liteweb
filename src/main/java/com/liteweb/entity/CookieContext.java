@@ -3,6 +3,9 @@ package com.liteweb.entity;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author Hone
+ */
 public class CookieContext {
     private final Map<String,Cookie> cookieMap=new HashMap<>();
     private final String host;

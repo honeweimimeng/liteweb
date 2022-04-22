@@ -1,5 +1,9 @@
 package com.liteweb.enums;
 
+/**
+ * @author Hone
+ */
+
 public enum HttpMethodName {
     GET("GET"),POST("POST"),PUT("PUT"),DELETE("DELETE");
     private final String name;

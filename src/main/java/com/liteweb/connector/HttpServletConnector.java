@@ -7,6 +7,7 @@ import com.liteweb.factory.LoggerFactory;
 import com.liteweb.entity.HttpServletRequest;
 import com.liteweb.entity.HttpServletResponse;
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.Channel;
@@ -43,7 +44,7 @@ public class HttpServletConnector extends ServletConnector{
         httpServletResponse=(HttpServletResponse)servletBuilder.buildResponse();
         httpServletResponse.setConnector(this);
         httpFilter=(HttpFilter) LiteWebContext.getInstance().getFilterRegister()
-                .findByFilterPath(httpServletRequest.getRequestURI());
+                .findByFilterPath(httpServletRequest.getRequestUri());
     }
 
     /**
@@ -53,7 +54,7 @@ public class HttpServletConnector extends ServletConnector{
      */
     public void response(Channel channel, ByteBuffer[] messageBuffers){
         boolean isAsy = channel instanceof AsynchronousSocketChannel;
-        int res= isAsy ? responseAsy((AsynchronousSocketChannel) channel,messageBuffers):
+        long res= isAsy ? responseAsy((AsynchronousSocketChannel) channel,messageBuffers):
                 responseSyn((SocketChannel)channel,messageBuffers);
         logger.info("管道返回码"+res);
     }
@@ -64,15 +65,24 @@ public class HttpServletConnector extends ServletConnector{
      * @param messageBuffers 缓冲区数组
      * @return 写入大小
      */
-    protected int responseAsy(AsynchronousSocketChannel socketChannel, ByteBuffer[] messageBuffers){
+    protected long responseAsy(AsynchronousSocketChannel socketChannel, ByteBuffer[] messageBuffers){
+        WriteEntity writeEntity=new WriteEntity(0L,0L);
         ByteBuffer[][] loopBuffer=writeInBatches(messageBuffers);
         socketChannel.write(loopBuffer[0],0,loopBuffer[0].length,30,
-                TimeUnit.SECONDS, 0, new CompletionHandler<Long, Object>() {
+                TimeUnit.SECONDS, writeEntity, new CompletionHandler<Long, Object>() {
                     @Override
                     public void completed(Long result, Object attachment) {
+                        WriteEntity writes=(WriteEntity)attachment;
+                        int index=(int)writes.index;
+                        long allSize = calAllSize(loopBuffer[index]);
+                        if(result<allSize){
+                            writes.now+=result;
+                            socketChannel.write(loopBuffer[index],0,loopBuffer[index].length,30
+                                    ,TimeUnit.SECONDS,writes,this);
+                            return;
+                        }
                         //已经写完
-                        int att=(Integer)attachment;
-                        if(++att == loopBuffer.length){
+                        if(++index == loopBuffer.length){
                             try {
                                 socketChannel.close();
                             }catch (IOException e){
@@ -80,7 +90,8 @@ public class HttpServletConnector extends ServletConnector{
                             }
                             return;
                         }
-                        socketChannel.write(loopBuffer[att],0,loopBuffer[att].length,30,TimeUnit.SECONDS,att,this);
+                        socketChannel.write(loopBuffer[index],0,loopBuffer[index].length,30
+                                ,TimeUnit.SECONDS,index,this);
                     }
 
                     @Override
@@ -93,9 +104,6 @@ public class HttpServletConnector extends ServletConnector{
                         }
                     }
                 });
-        for (int i = 0; i < loopBuffer.length; i++) {
-
-        }
         return 0;
     }
 
@@ -105,19 +113,28 @@ public class HttpServletConnector extends ServletConnector{
      * @param messageBuffers 缓冲区数组
      * @return 写入大小
      */
-    protected int responseSyn(SocketChannel socketChannel, ByteBuffer[] messageBuffers){
-        int count=0;
+    protected long responseSyn(SocketChannel socketChannel, ByteBuffer[] messageBuffers){
+        long count=0;
         try {
             ByteBuffer[][] byteBuffers=writeInBatches(messageBuffers);
             for (ByteBuffer[] writeByteBuffer : byteBuffers) {
-                count+=socketChannel.write(writeByteBuffer);
+                long allSize = calAllSize(writeByteBuffer);
+                long nowWrite=socketChannel.write(writeByteBuffer);
+                while(nowWrite<allSize){
+                    nowWrite+=socketChannel.write(writeByteBuffer);
+                }
+                count+=nowWrite;
             }
             socketChannel.close();
         }catch (IOException e){
             e.printStackTrace();
             throw new RuntimeException("返回数据错误");
         }
-        return count;
+        return (int) count;
+    }
+
+    private long calAllSize(ByteBuffer[] byteBuffers){
+        return Arrays.stream(byteBuffers).mapToLong(Buffer::remaining).sum();
     }
 
     /**
@@ -148,5 +165,15 @@ public class HttpServletConnector extends ServletConnector{
 
     public HttpFilter getHttpFilter() {
         return httpFilter;
+    }
+
+    static class WriteEntity{
+        long index;
+        long now;
+
+        public WriteEntity(Long index,Long now){
+            this.index=index;
+            this.now=now;
+        }
     }
 }

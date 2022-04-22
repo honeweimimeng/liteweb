@@ -8,6 +8,9 @@ import com.liteweb.enums.HttpStatusCode;
 
 import java.util.*;
 
+/**
+ * @author Hone
+ */
 public class HttpMessageUtil {
 
     /**
@@ -18,9 +21,9 @@ public class HttpMessageUtil {
      * 请求报文实体
      */
     public static void setHeaderFirstLine(String filed, HttpServletRequest request){
-        String double_null= RunTimeConstant.NULL_STR+RunTimeConstant.NULL_STR;
-        while(filed.contains(double_null)){
-            filed=filed.replace(double_null,RunTimeConstant.NULL_STR);
+        String doubleNull = RunTimeConstant.NULL_STR+RunTimeConstant.NULL_STR;
+        while(filed.contains(doubleNull)){
+            filed=filed.replace(doubleNull,RunTimeConstant.NULL_STR);
         }
         String[] firstLineStrArr=filed.split(RunTimeConstant.NULL_STR);
         if(firstLineStrArr.length<3){
@@ -29,7 +32,7 @@ public class HttpMessageUtil {
         request.setMethod(firstLineStrArr[0]);
         String uriFull=firstLineStrArr[1];
         int tag;
-        if((tag=uriFull.indexOf(ServerConstant.HttpURLPragmasTag))>0){
+        if((tag=uriFull.indexOf(ServerConstant.HTTP_URL_PRAGMAS_TAG))>0){
             if(tag<uriFull.length()-1){
                 String pragma=uriFull.substring(tag+1);
                 request.setPragma(HttpMessageUtil.urlSplit(pragma));
@@ -49,37 +52,37 @@ public class HttpMessageUtil {
      */
     public static void setOtherFiled(String filed, HttpServletRequest request){
         filed=filed.replace(RunTimeConstant.NULL_STR,"");
-        int spliceIndex=filed.indexOf(ServerConstant.HttpURLFiledSplice);
+        int spliceIndex=filed.indexOf(ServerConstant.HTTP_URL_FILED_SPLICE);
         String key=filed.substring(0,spliceIndex);
         String value=filed.substring(spliceIndex+1);
-        if(key.equalsIgnoreCase("user-agent")){
+        if("user-agent".equalsIgnoreCase(key)){
             request.setUserAgent(value);
         }
-        if(key.equalsIgnoreCase("accept")){
+        if("accept".equalsIgnoreCase(key)){
             request.setAccept(value);
         }
-        if(key.equalsIgnoreCase("accept-encoding")){
+        if("accept-encoding".equalsIgnoreCase(key)){
             request.setAcceptEncoding(value);
         }
-        if(key.equalsIgnoreCase("accept-language")){
+        if("accept-language".equalsIgnoreCase(key)){
             request.setAcceptLanguage(value);
         }
-        if(key.equalsIgnoreCase("connection")){
+        if("connection".equalsIgnoreCase(key)){
             request.setConnection(value);
         }
-        if(key.equalsIgnoreCase("content-type")){
+        if("content-type".equalsIgnoreCase(key)){
             request.setContentType(value);
         }
-        if(key.equalsIgnoreCase("content-length")){
+        if("content-length".equalsIgnoreCase(key)){
             request.setContentLength(Integer.parseInt(value));
         }
-        if(key.equalsIgnoreCase("Host")){
+        if("Host".equalsIgnoreCase(key)){
             request.setHost(value);
         }
-        if(key.equalsIgnoreCase("referer")){
+        if("referer".equalsIgnoreCase(key)){
             request.setReferer(value);
         }
-        if(key.equalsIgnoreCase("cookie")){
+        if("cookie".equalsIgnoreCase(key)){
             request.setCookieContext(cookieSplit(value,request.getHost()));
         }
     }
@@ -121,11 +124,11 @@ public class HttpMessageUtil {
     public static CookieContext cookieSplit(String cookies,String host){
         CookieContext cookieContext=new CookieContext(host);
         if(cookies!=null&&!cookies.isEmpty()){
-            String[] cookie_item=cookies.split(";");
+            String[] cookieItem =cookies.split(";");
             if(!cookies.contains(";")){
-                cookie_item= new String[]{cookies};
+                cookieItem= new String[]{cookies};
             }
-            Arrays.stream(cookie_item).forEach(item->{
+            Arrays.stream(cookieItem).forEach(item->{
                 int index=cookies.indexOf("=");
                 cookieContext.addCookie(cookies.substring(0,index),
                         cookies.substring(index+1));
@@ -142,21 +145,21 @@ public class HttpMessageUtil {
      */
     public static String setResponseHeader(Map<String,List<String>> header,int code){
         StringBuilder stringBuilder = new StringBuilder()
-                .append(ServerConstant.HttpServerVersion)
+                .append(ServerConstant.HTTP_SERVER_VERSION)
                 .append(RunTimeConstant.NULL_STR)
                 .append(code)
                 .append(RunTimeConstant.NULL_STR)
                 .append(HttpStatusCode.getTips(code))
-                .append(ServerConstant.HttpLineTag);
+                .append(ServerConstant.HTTP_LINE_TAG);
         header.keySet().forEach(item->{
             List<String> values=header.get(item);
             values.forEach(value->{
-                stringBuilder.append(item).append(ServerConstant.HttpURLFiledSplice)
+                stringBuilder.append(item).append(ServerConstant.HTTP_URL_FILED_SPLICE)
                         .append(RunTimeConstant.NULL_STR)
-                        .append(value).append(ServerConstant.HttpLineTag);
+                        .append(value).append(ServerConstant.HTTP_LINE_TAG);
             });
         });
-        stringBuilder.append(ServerConstant.HttpLineTag);
+        stringBuilder.append(ServerConstant.HTTP_LINE_TAG);
         return stringBuilder.toString();
     }
 }

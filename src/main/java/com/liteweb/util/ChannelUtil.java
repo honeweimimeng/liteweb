@@ -10,6 +10,7 @@ import java.nio.channels.SocketChannel;
 
 /**
  * Channel操作工具类
+ * @author Hone
  */
 public class ChannelUtil {
     /**
@@ -19,12 +20,12 @@ public class ChannelUtil {
      */
     public static void write(Channel channel, ByteBuffer byteBuffer) throws Exception{
         if(channel instanceof AsynchronousSocketChannel){
-            AsynchronousSocketChannel asy_channel=(AsynchronousSocketChannel) channel;
+            AsynchronousSocketChannel asyChannel =(AsynchronousSocketChannel) channel;
             //等待返回结果
-            asy_channel.write(byteBuffer).get();
+            asyChannel.write(byteBuffer).get();
         }else if(channel instanceof SocketChannel){
-            SocketChannel syn_channel=(SocketChannel) channel;
-            syn_channel.write(byteBuffer);
+            SocketChannel synChannel =(SocketChannel) channel;
+            synChannel.write(byteBuffer);
         }else{
             channel.close();
             throw new ServerException("读取握手消息失败");
@@ -38,12 +39,12 @@ public class ChannelUtil {
      */
     public static void read(Channel channel, ByteBuffer byteBuffer) throws Exception{
         if(channel instanceof AsynchronousSocketChannel){
-            AsynchronousSocketChannel asy_channel=(AsynchronousSocketChannel) channel;
+            AsynchronousSocketChannel asyChannel =(AsynchronousSocketChannel) channel;
             //等待返回结果
-            asy_channel.read(byteBuffer).get();
+            asyChannel.read(byteBuffer).get();
         }else if(channel instanceof SocketChannel){
-            SocketChannel syn_channel=(SocketChannel) channel;
-            syn_channel.read(byteBuffer);
+            SocketChannel synChannel =(SocketChannel) channel;
+            synChannel.read(byteBuffer);
         }else{
             channel.close();
             throw new ServerException("读取握手消息失败");

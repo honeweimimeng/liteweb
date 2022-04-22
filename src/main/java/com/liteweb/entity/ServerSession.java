@@ -4,8 +4,11 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @author Hone
+ */
 public class ServerSession {
-    private String sessionID;
+    private String sessionId;
     private String value;
     private Date timeOut;
     private final Map<String,Content> contents=new ConcurrentHashMap<>();
@@ -18,8 +21,8 @@ public class ServerSession {
         this.contents.put(content.key,content);
     }
 
-    public void setSessionID(String sessionID) {
-        this.sessionID = sessionID;
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
     public void setTimeOut(Date timeOut) {
@@ -38,8 +41,8 @@ public class ServerSession {
         return contents.get(key);
     }
 
-    public String getSessionID() {
-        return sessionID;
+    public String getSessionId() {
+        return sessionId;
     }
 
     public static class Content{

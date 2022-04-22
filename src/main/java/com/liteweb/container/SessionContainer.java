@@ -12,27 +12,28 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Session容器
+ * @author Hone
  */
 public class SessionContainer implements Container{
-    private static final String Name="SessionId";
-    private static final Map<String, ServerSession> serverSessionMap=new ConcurrentHashMap<>();
+    private static final String NAME ="SessionId";
+    private static final Map<String, ServerSession> SERVER_SESSION_MAP =new ConcurrentHashMap<>();
 
-    public ServerSession createSessionID(){
-        return createSessionID(20,TimeUnit.SECONDS);
+    public ServerSession createSessionId(){
+        return createSessionId(20,TimeUnit.SECONDS);
     }
-    public ServerSession createSessionID(Integer time,TimeUnit timeUnit){
-        String Key=null;
-        while (serverSessionMap.containsKey(Key=IDsUtil.getId(Name))){
-            Key=IDsUtil.getId(Name);
+    public ServerSession createSessionId(Integer time,TimeUnit timeUnit){
+        String key =null;
+        while (SERVER_SESSION_MAP.containsKey(key=IDsUtil.getId(NAME))){
+            key=IDsUtil.getId(NAME);
         }
         ServerSession serverSession=new ServerSession();
-        serverSession.setSessionID(Key);
+        serverSession.setSessionId(key);
         serverSession.setTimeOut(new Date(System.currentTimeMillis()+timeUnit.toMillis(time)));
         //生成新Session
-        serverSessionMap.put(Key,serverSession);
+        SERVER_SESSION_MAP.put(key,serverSession);
         return serverSession;
     }
     public ServerSession getSession(String key){
-        return serverSessionMap.get(key);
+        return SERVER_SESSION_MAP.get(key);
     }
 }

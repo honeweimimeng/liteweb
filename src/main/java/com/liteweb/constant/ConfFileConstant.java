@@ -1,5 +1,8 @@
 package com.liteweb.constant;
 
+/**
+ * @author Hone
+ */
 public class ConfFileConstant {
     public static final String CONF_FILE_NAME = "liteWeb.properties";
     public static final String FILE_COME_MODEL="user.dir";

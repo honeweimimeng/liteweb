@@ -18,6 +18,9 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
+/**
+ * @author Hone
+ */
 public class NioSocketBuilder extends SocketIoBuilder {
     private static final Logger logger= LoggerFactory.createInfo("NioSocket信息");
     private Selector selector;
@@ -37,12 +40,12 @@ public class NioSocketBuilder extends SocketIoBuilder {
      */
     @Override
     public void loadingIoSocket(SocketService socketService) {
-        ServerSocketChannel server_channel=(ServerSocketChannel) getChannel();
-        ThreadPool.servicePool.execute(()->{
+        ServerSocketChannel serverChannel =(ServerSocketChannel) getChannel();
+        ThreadPool.SERVICE_POOL.execute(()->{
             logger.info("NIO通道加载，线程--->"+Thread.currentThread().getName()+"@ID"+Thread.currentThread().getId());
             try {
                 selector=Selector.open();
-                server_channel.register(selector, SelectionKey.OP_ACCEPT);
+                serverChannel.register(selector, SelectionKey.OP_ACCEPT);
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new LiteWebException("NIO轮询器开启失败"+e.getMessage());
@@ -54,13 +57,13 @@ public class NioSocketBuilder extends SocketIoBuilder {
                     SelectionKey key=iterator.next();
                     iterator.remove();
                     if (key.isAcceptable()) {
-                        socketService.Accept(isBlocking(),key,selector);
+                        socketService.accept(isBlocking(),key,selector);
                     }else if(key.isReadable()){
                         SocketChannel socketChannel=(SocketChannel) key.channel();
                         //关闭当前key的关心操作
                         key.interestOps(0);
                         //开启线程处理
-                        ThreadPool.servletPool.execute(()->{
+                        ThreadPool.SERVLET_POOL.execute(()->{
                             socketService.serviceHandler(key.attachment()).invokeToInfo(socketChannel);
                         });
                     }

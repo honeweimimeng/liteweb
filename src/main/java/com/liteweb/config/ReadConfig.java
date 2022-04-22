@@ -6,8 +6,13 @@ import java.util.Arrays;
 
 /**
  * 配置类对象不进行GC
+ * @author Hone
  */
 public abstract class ReadConfig {
+    /**
+     * 配置默认参数列表
+     * @return String[]
+     */
     abstract String[] defaultValue();
     String loadConf(String key,int index){
         String now = PropertiesFileUtil.getPropertiesStr(key);

@@ -3,6 +3,9 @@ package com.liteweb.entity;
 import com.liteweb.enums.HttpStatusCode;
 import java.nio.ByteBuffer;
 
+/**
+ * @author Hone
+ */
 public abstract class HttpServlet implements WebServlet{
     public void init(HttpServletRequest request){}
     public void doGet(HttpServletRequest request,HttpServletResponse response){

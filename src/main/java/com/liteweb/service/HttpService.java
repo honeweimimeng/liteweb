@@ -9,20 +9,17 @@ import com.liteweb.entity.HttpServletRequest;
 import com.liteweb.entity.HttpServletResponse;
 import com.liteweb.factory.LoggerFactory;
 import java.nio.channels.Channel;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 /**
  * Http服务
+ * @author Hone
  */
 public class HttpService extends SocketService{
-    //通信管道
     private final Channel channel;
-    //服务对应包含的container
     private final ServletContainer servletContainer=new HttpServletContainer();
-    //服务内部聚合的连接
     private final List<ServletConnector> servletConnectors=new CopyOnWriteArrayList<>();
     private static final Logger logger= LoggerFactory.createInfo("HttpServlet预处理");
 
@@ -58,7 +55,7 @@ public class HttpService extends SocketService{
             //获取请求报文,委派子组件完成
             HttpServletConnector httpServletConnector=new HttpServletConnector(new HttpServletBuilder(channel));
             HttpServletRequest request=realHttpHandler(httpServletConnector);
-            logger.info("Method:"+request.getMethod()+" -- Path:"+request.getRequestURI()+" -- 耗费时间："+(System.currentTimeMillis()-start)+"ms");
+            logger.info("Method:"+request.getMethod()+" -- Path:"+request.getRequestUri()+" -- 耗费时间："+(System.currentTimeMillis()-start)+"ms");
         };
     }
 
@@ -83,7 +80,7 @@ public class HttpService extends SocketService{
     }
 
     @Override
-    public Object Accept(Channel channel) {
+    public Object accept(Channel channel) {
         return null;
     }
 }

@@ -14,7 +14,7 @@ public class BaseServices {
      * @return 服务原型
      */
     public BaseService createHttp(Integer port){
-        return new BaseService(new HTTPServiceFactory(false),new InetSocketAddress(hostName,port),"Http") {
+        return new BaseService(new HttpServiceFactory(false),new InetSocketAddress(hostName,port),"Http") {
             @Override
             public String getName() {
                 return super.getName();
@@ -27,7 +27,7 @@ public class BaseServices {
      * @return 服务原型
      */
     public BaseService createHttps(Integer port){
-        return new BaseService(new HTTPServiceFactory(true),new InetSocketAddress(hostName,port),"Https") {
+        return new BaseService(new HttpServiceFactory(true),new InetSocketAddress(hostName,port),"Https") {
             @Override
             public String getName() {
                 return super.getName();

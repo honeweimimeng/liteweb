@@ -1,5 +1,8 @@
 package com.liteweb.constant;
 
+/**
+ * @author Hone
+ */
 public class ExceptionConstant {
     public static final String ERR_PROPERTIES="配置文件加载异常：";
     public static final String ERR_FILE_FOUND="文件查找异常：";

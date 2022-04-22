@@ -6,12 +6,15 @@ import com.liteweb.service.HttpsService;
 import com.liteweb.service.SocketService;
 import java.nio.channels.Channel;
 
-public class HTTPServiceFactory extends ServiceFactory{
+/**
+ * @author Hone
+ */
+public class HttpServiceFactory extends ServiceFactory{
     private final boolean isSSL;
     private Channel channel;
 
-    public HTTPServiceFactory(boolean isSSL){
-        this.isSSL=isSSL;
+    public HttpServiceFactory(boolean isSsl){
+        this.isSSL=isSsl;
         name= isSSL ? "Https服务":"Http服务";
     }
 

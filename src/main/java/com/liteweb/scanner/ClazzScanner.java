@@ -13,6 +13,9 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
 
+/**
+ * @author Hone
+ */
 public class ClazzScanner{
     private static final Logger logger = LoggerFactory.createInfo("类扫描器扫描异常");
     private static volatile ClazzScanner clazzScanner;
@@ -72,20 +75,20 @@ public class ClazzScanner{
      */
     private Class<?>[] findToJar(String absoluteName,String name){
         List<Class<?>> resList=new ArrayList<>();
-        String path_name=name.substring(0,name.lastIndexOf("."));
+        String pathName =name.substring(0,name.lastIndexOf("."));
         JarFile jar = null;
         try {
             jar = new JarFile(absoluteName);
             Enumeration<JarEntry> entryEnumeration = jar.entries();
             while (entryEnumeration.hasMoreElements()) {
-                String entity_name = entryEnumeration.nextElement().getName().replace("/",".");
-                if(entity_name.contains(path_name)&&
-                        "class".equals(entity_name.substring(entity_name.lastIndexOf(".")+1))){
-                    if(!name.equals(entity_name=entity_name.substring(0,entity_name.lastIndexOf(".")))){
+                String entityName = entryEnumeration.nextElement().getName().replace("/",".");
+                if(entityName.contains(pathName)&&
+                        "class".equals(entityName.substring(entityName.lastIndexOf(".")+1))){
+                    if(!name.equals(entityName=entityName.substring(0,entityName.lastIndexOf(".")))){
                         try {
-                            resList.add(Class.forName(entity_name));
+                            resList.add(Class.forName(entityName));
                         }catch (ClassNotFoundException e){
-                            logger.severe("类"+entity_name+"未找到，无法加载");
+                            logger.severe("类"+entityName+"未找到，无法加载");
                         }
                     }
                 }

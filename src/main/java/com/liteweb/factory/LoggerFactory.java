@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 /**
  * Logger方法工厂
+ * @author Hone
  */
 public class LoggerFactory {
 

@@ -1,13 +1,16 @@
 package com.liteweb.register;
 
+/**
+ * @author Hone
+ */
 public class ServiceRegister<T> extends Register<T> {
     @Override
-    public void Register(String key,T t) {
+    public void register(String key,T t) {
 
     }
 
     @Override
-    public void Cancellation(String key) {
+    public void cancellation(String key) {
 
     }
 }

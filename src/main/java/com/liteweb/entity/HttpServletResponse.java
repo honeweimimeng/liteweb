@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @author Hone
+ */
 public class HttpServletResponse implements WebServlet {
     private int code;
     private Charset charset=StandardCharsets.UTF_8;

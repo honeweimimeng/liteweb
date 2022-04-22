@@ -4,6 +4,9 @@ import com.liteweb.entity.WebServlet;
 
 import java.nio.channels.Channel;
 
+/**
+ * @author Hone
+ */
 public abstract class ServletBuilder {
     protected final Channel channel;
     public ServletBuilder(Channel channel){

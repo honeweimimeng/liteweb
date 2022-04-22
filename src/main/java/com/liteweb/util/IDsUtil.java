@@ -3,6 +3,9 @@ package com.liteweb.util;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * @author Hone
+ */
 public class IDsUtil {
 
     /**

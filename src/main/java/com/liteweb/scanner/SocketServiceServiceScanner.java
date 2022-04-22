@@ -9,6 +9,7 @@ import com.liteweb.util.PropertiesFileUtil;
 
 /**
  * Socket服务扫描器
+ * @author Hone
  */
 public class SocketServiceServiceScanner extends ServiceScanner{
 
@@ -17,7 +18,7 @@ public class SocketServiceServiceScanner extends ServiceScanner{
      * @param service 基础服务
      */
     @Override
-    public void Deploy(BaseService... service) {
+    public void deploy(BaseService... service) {
         for (BaseService baseService : service) {
             SocketIoBuilder socketIoBuilder = OperationModelPool.getBuilder(PropertiesFileUtil.getOperationModel());
             SocketService socketService = new SocketIoDirector(socketIoBuilder,baseService.getServiceFactory(),baseService.getSocketAddress()).create();

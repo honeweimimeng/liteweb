@@ -16,6 +16,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
+/**
+ * @author Hone
+ */
 public class AioSocketBuilder extends SocketIoBuilder {
     private static final Logger logger= LoggerFactory.createInfo("AioSocket信息");
     @Override
@@ -34,16 +37,16 @@ public class AioSocketBuilder extends SocketIoBuilder {
      */
     @Override
     public void loadingIoSocket(SocketService socketService) {
-        AsynchronousServerSocketChannel server_channel=(AsynchronousServerSocketChannel) getChannel();
-        ThreadPool.servicePool.execute(()->{
+        AsynchronousServerSocketChannel serverChannel =(AsynchronousServerSocketChannel) getChannel();
+        ThreadPool.SERVICE_POOL.execute(()->{
             logger.info("AIO通道加载，线程--->"+Thread.currentThread().getName()+"@ID"+Thread.currentThread().getId());
-            server_channel.accept(null, new CompletionHandler<AsynchronousSocketChannel, Object>() {
+            serverChannel.accept(null, new CompletionHandler<AsynchronousSocketChannel, Object>() {
                 @Override
                 public void completed(AsynchronousSocketChannel result, Object attachment) {
-                    server_channel.accept(null,this);
+                    serverChannel.accept(null,this);
                     //开启线程处理
-                    ThreadPool.servletPool.execute(()->{
-                        socketService.serviceHandler(socketService.Accept(result)).invokeToInfo(result);
+                    ThreadPool.SERVLET_POOL.execute(()->{
+                        socketService.serviceHandler(socketService.accept(result)).invokeToInfo(result);
                     });
                 }
 

@@ -9,13 +9,16 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+/**
+ * @author Hone
+ */
 public class HttpServletRequest implements WebServlet {
 
     private String method;
 
     private String protocol;
 
-    private String requestURI;
+    private String requestUri;
 
     private String host;
 
@@ -112,7 +115,7 @@ public class HttpServletRequest implements WebServlet {
     }
 
     public void setRequestURI(String requestURI) {
-        this.requestURI = requestURI;
+        this.requestUri = requestURI;
     }
 
     public void setUserAgent(String userAgent) {
@@ -171,8 +174,8 @@ public class HttpServletRequest implements WebServlet {
         return referer;
     }
 
-    public String getRequestURI() {
-        return requestURI;
+    public String getRequestUri() {
+        return requestUri;
     }
 
     public String getUserAgent() {

@@ -5,18 +5,21 @@ import com.liteweb.entity.WebServlet;
 import com.liteweb.register.inter.Registry;
 import com.liteweb.service.SocketService;
 
+/**
+ * @author Hone
+ */
 public abstract class Register<T> implements Registry<T> {
     public Integer getServiceCount(){
-        return service_map.size();
+        return SERVICE_MAP.size();
     }
     public SocketService findByProtocol(String path){
-        return service_map.get(path);
+        return SERVICE_MAP.get(path);
     }
     public Integer getServletCount(){
-        return servlet_map.size();
+        return SERVLET_MAP.size();
     }
     public WebServlet findByPath(String path){
-        return servlet_map.get(path);
+        return SERVLET_MAP.get(path);
     }
     public WebFilter findByFilterPath(String path){
         if(path==null){
@@ -24,12 +27,12 @@ public abstract class Register<T> implements Registry<T> {
         }
         //从最长路径搜索过滤器
         while (path.contains("/")){
-            WebFilter webFilter = filter_map.get(path+"/*");
+            WebFilter webFilter = FILTER_MAP.get(path+"/*");
             if(webFilter!=null){
                 return webFilter;
             }
             path=path.substring(0,path.lastIndexOf("/"));
         }
-        return filter_map.get(path+"/*");
+        return FILTER_MAP.get(path+"/*");
     }
 }

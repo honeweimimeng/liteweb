@@ -68,11 +68,11 @@ public class Cookie {
         Calendar calendar=Calendar.getInstance();
         calendar.add(Calendar.SECOND,6*60*60+expires);
         SimpleDateFormat format=new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
-        return key + ServerConstant.EqualsStr + value
-                + ServerConstant.EndStr + RunTimeConstant.NULL_STR
-                + "path=" + path + ServerConstant.EndStr + RunTimeConstant.NULL_STR
+        return key + ServerConstant.EQUALS_STR + value
+                + ServerConstant.END_STR + RunTimeConstant.NULL_STR
+                + "path=" + path + ServerConstant.END_STR + RunTimeConstant.NULL_STR
                 + "expires=" + format.format(calendar.getTime())
-                + ServerConstant.EndStr + RunTimeConstant.NULL_STR
+                + ServerConstant.END_STR + RunTimeConstant.NULL_STR
                 + "domain=" + domain;
     }
 }

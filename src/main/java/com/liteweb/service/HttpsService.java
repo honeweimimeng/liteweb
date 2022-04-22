@@ -10,11 +10,8 @@ import com.liteweb.util.ChannelUtil;
 import javax.net.ssl.*;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -24,6 +21,7 @@ import java.util.logging.Logger;
 
 /**
  * 基于TLS+TCP(Socket/AsySocket)的Https协议
+ * @author Hone
  */
 public class HttpsService extends HttpService{
     private static final Logger logger= LoggerFactory.createInfo("HttpsServlet预处理");
@@ -40,18 +38,15 @@ public class HttpsService extends HttpService{
     }
 
     @Override
-    public SocketChannel Accept(boolean isBlocking, SelectionKey key, Selector selector) throws Exception {
+    public void accept(boolean isBlocking, SelectionKey key, Selector selector) throws Exception {
         SocketChannel socketChannel=((ServerSocketChannel)key.channel()).accept();
-        socketChannel.configureBlocking(true);
-        socketChannel.setOption(StandardSocketOptions.TCP_NODELAY, true);
         SSLEngine engine=initSSL(socketChannel);
         socketChannel.configureBlocking(isBlocking);
-        socketChannel.register(selector, SelectionKey.OP_READ,engine);
-        return socketChannel;
+        socketChannel.register(selector, SelectionKey.OP_READ).attach(engine);
     }
 
     @Override
-    public Object Accept(Channel channel){
+    public Object accept(Channel channel){
         try {
             return initSSL(channel);
         }catch (Exception e){
@@ -67,7 +62,7 @@ public class HttpsService extends HttpService{
     /**
      * 初始化SSL
      * @param socketChannel 通信管道
-     * @throws Exception
+     * @throws Exception 初始化SSL异常
      */
     private SSLEngine initSSL(Channel socketChannel) throws Exception {
         start=System.currentTimeMillis();
@@ -76,7 +71,7 @@ public class HttpsService extends HttpService{
         engine.setUseClientMode(false);
         engine.setWantClientAuth(false);
         engine.setEnableSessionCreation(true);
-        HandShake(engine,socketChannel);
+        handShake(engine,socketChannel);
         return engine;
     }
 
@@ -86,12 +81,12 @@ public class HttpsService extends HttpService{
      */
     private SSLContext getContext() throws Exception{
         KeyStore ks = KeyStore.getInstance ( "JKS" );
-        FileInputStream fis = new FileInputStream ( LiteWebConfig.ssl_certificateFile );
-        char[] password = LiteWebConfig.ssl_certificatePwd.toCharArray();
+        FileInputStream fis = new FileInputStream ( LiteWebConfig.SSL_CERTIFICATE_FILE );
+        char[] password = LiteWebConfig.SSL_CERTIFICATE_PWD.toCharArray();
         ks.load (fis,password);
         KeyManagerFactory kmf = KeyManagerFactory.getInstance ( "SunX509" );
         kmf.init(ks,password);
-        SSLContext sslContext = SSLContext.getInstance ( LiteWebConfig.ssl_protocol );
+        SSLContext sslContext = SSLContext.getInstance ( LiteWebConfig.SSL_PROTOCOL );
         sslContext.init ( kmf.getKeyManagers (), null,
                 new SecureRandom());
         return sslContext;
@@ -102,7 +97,7 @@ public class HttpsService extends HttpService{
      * @param engine SSL自定义握手攻城器
      * @param channel 消息管道
      */
-    private void HandShake(SSLEngine engine,Channel channel) throws Exception{
+    private void handShake(SSLEngine engine, Channel channel) throws Exception{
         //设置缓冲区
         SSLSession sslSession=engine.getSession();
         int appSize=sslSession.getApplicationBufferSize();
@@ -123,7 +118,7 @@ public class HttpsService extends HttpService{
      * @param channel 通信管道
      * @param appBuf 本地缓冲
      * @param netBuf 网络数据缓冲
-     * @throws Exception
+     * @throws Exception SSL握手异常
      */
     private void doHandShake(SSLEngine engine,Channel channel,ByteBuffer appBuf,ByteBuffer netBuf) throws Exception {
         SSLEngineResult.HandshakeStatus hsStatus=engine.getHandshakeStatus();
@@ -153,7 +148,7 @@ public class HttpsService extends HttpService{
                 case NOT_HANDSHAKING:
                     handshakeDone=true;
                     break;
-                case FINISHED:
+                default:
                     break;
             }
         }
@@ -187,9 +182,8 @@ public class HttpsService extends HttpService{
                 HttpServletConnector httpServletConnector=
                         new HttpServletConnectorProxy(new HttpBuilderProxy(channel,engine),engine);
                 HttpServletRequest request = realHttpHandler(httpServletConnector);
-                logger.info("Method:"+request.getMethod()+" -- Path:"+request.getRequestURI()+" -- 耗费时间："+(System.currentTimeMillis()-start)+"ms");
+                logger.info("Method:"+request.getMethod()+" -- Path:"+request.getRequestUri()+" -- 耗费时间："+(System.currentTimeMillis()-start)+"ms");
             }catch (Exception e){
-                e.printStackTrace();
                 throw new ServerException("确认是否配置XXX.keystore路径以及密码,也有可能客户端未此安装证书,或访问并非安全访问");
             }
         }
@@ -210,9 +204,9 @@ public class HttpsService extends HttpService{
          * 读取Buffer数据方法，SSL数据需要解密
          * @param byteBuffer 字节缓冲区
          * @return 读取缓冲区大小
-         * @throws IOException
-         * @throws ExecutionException
-         * @throws InterruptedException
+         * @throws IOException 读取异常
+         * @throws ExecutionException 异步管道异常
+         * @throws InterruptedException 异步管道异常
          */
         @Override
         protected int selChannelToBuffer(ByteBuffer byteBuffer) throws IOException, ExecutionException, InterruptedException {

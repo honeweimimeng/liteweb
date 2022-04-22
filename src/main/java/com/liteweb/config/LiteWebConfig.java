@@ -13,34 +13,35 @@ import java.util.logging.Logger;
 
 /**
  * Web基础配置
+ * @author Hone
  */
 public class LiteWebConfig extends ReadConfig{
-    public static final Integer http_port;
-    public static final Integer https_port;
-    public static final String host;
-    private static final LiteWebConfig webConfig=new LiteWebConfig();
-    public static final String ssl_protocol;
-    public static final String ssl_certificateFile;
-    public static final String ssl_certificatePwd;
-    public static final String ssl_certificateFile_trust;
-    public static final String ssl_certificatePwd_trust;
+    public static final Integer HTTP_PORT;
+    public static final Integer HTTPS_PORT;
+    public static final String HOST;
+    private static final LiteWebConfig WEB_CONFIG =new LiteWebConfig();
+    public static final String SSL_PROTOCOL;
+    public static final String SSL_CERTIFICATE_FILE;
+    public static final String SSL_CERTIFICATE_PWD;
+    public static final String SSL_CERTIFICATE_FILE_TRUST;
+    public static final String SSL_CERTIFICATE_PWD_TRUST;
 
     //初始化端口和host主机
     static {
-        http_port=webConfig.loadConfInt(ConfFileConstant.OPERATION_HTTP_PORT,0);
-        https_port=webConfig.loadConfInt(ConfFileConstant.OPERATION_HTTPS_PORT,1);
-        ssl_protocol=webConfig.loadConf(ConfFileConstant.SSL_PROTOCOL,2);
-        ssl_certificateFile=webConfig.loadConf(ConfFileConstant.SSL_FILE,3);
-        ssl_certificatePwd=webConfig.loadConf(ConfFileConstant.SSL_PASSWORD,4);
-        ssl_certificateFile_trust=webConfig.loadConf(ConfFileConstant.SSL_FILE_TRUST,5);
-        ssl_certificatePwd_trust=webConfig.loadConf(ConfFileConstant.SSL_PASSWORD_TRUST,6);
+        HTTP_PORT=WEB_CONFIG.loadConfInt(ConfFileConstant.OPERATION_HTTP_PORT,0);
+        HTTPS_PORT=WEB_CONFIG.loadConfInt(ConfFileConstant.OPERATION_HTTPS_PORT,1);
+        SSL_PROTOCOL=WEB_CONFIG.loadConf(ConfFileConstant.SSL_PROTOCOL,2);
+        SSL_CERTIFICATE_FILE=WEB_CONFIG.loadConf(ConfFileConstant.SSL_FILE,3);
+        SSL_CERTIFICATE_PWD=WEB_CONFIG.loadConf(ConfFileConstant.SSL_PASSWORD,4);
+        SSL_CERTIFICATE_FILE_TRUST=WEB_CONFIG.loadConf(ConfFileConstant.SSL_FILE_TRUST,5);
+        SSL_CERTIFICATE_PWD_TRUST=WEB_CONFIG.loadConf(ConfFileConstant.SSL_PASSWORD_TRUST,6);
         String host1;
         try {
             host1 = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
             host1 = ServerConstant.DEFAULT_HOST;
         }
-        host = host1;
+        HOST = host1;
     }
 
     @Override

@@ -2,6 +2,9 @@ package com.liteweb.scanner;
 
 import com.liteweb.exception.ServerException;
 
+/**
+ * @author Hone
+ */
 public class SocketIoScanner {
     public void startIoScanner(SocketIoHandler socketIoHandler){
         while (true){

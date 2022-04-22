@@ -9,13 +9,13 @@ import com.liteweb.register.ServletRegister;
 import com.liteweb.service.BaseService;
 import com.liteweb.service.SocketService;
 
+/**
+ * @author Hone
+ */
 public class LiteWebContext {
     private volatile static LiteWebContext liteWebContext;
-    //服务注册器
     private final ServiceRegister<BaseService> serviceRegister= new ServiceRegister<>();
-    //servlet注册器
     private final ServletRegister<WebServlet> servletRegister=new ServletRegister<>();
-    //filter注册器
     private final FilterRegister<WebFilter> filterRegister=new FilterRegister<>();
     private LiteWebContext(){
         if(liteWebContext!=null){

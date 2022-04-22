@@ -11,6 +11,9 @@ import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.Channel;
 import java.nio.channels.ServerSocketChannel;
 
+/**
+ * @author Hone
+ */
 public abstract class SocketIoBuilder {
     private Channel channel;
 

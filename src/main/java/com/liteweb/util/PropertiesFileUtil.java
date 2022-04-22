@@ -13,15 +13,18 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+/**
+ * @author Hone
+ */
 public class PropertiesFileUtil {
     private static final Logger logger= LoggerFactory.createException("PropertiesLoad");
-    private static final Logger logger_success= LoggerFactory.createInfo("PropertiesLoadSuucess");
-    private static final Properties properties;
+    private static final Logger logger_success= LoggerFactory.createInfo("PropertiesLoadSuccess");
+    private static final Properties PROPERTIES;
 
     //获取单例工厂的Properties引用
     static {
-        properties = PropertiesFactory.createProperties();
-        if(properties==null){
+        PROPERTIES = PropertiesFactory.createProperties();
+        if(PROPERTIES==null){
             logger.severe("资源目录下无"+ConfFileConstant.CONF_FILE_NAME+"配置文件");
         }
     }
@@ -31,11 +34,11 @@ public class PropertiesFileUtil {
      * @return 运行模式 OperationConstant.XX_RUN_MODEL
      */
     public static String getOperationModel() {
-        String run_mode_conf = properties ==null ? null:properties.getProperty(ConfFileConstant.OPERATION_MODEL_NAME);
-        if(run_mode_conf==null||run_mode_conf.isEmpty()){
+        String runModeConf = PROPERTIES ==null ? null:PROPERTIES.getProperty(ConfFileConstant.OPERATION_MODEL_NAME);
+        if(runModeConf==null||runModeConf.isEmpty()){
             return OperationConstant.NIO_RUN_MODEL;
         }
-        return run_mode_conf;
+        return runModeConf;
     }
 
     /**
@@ -45,7 +48,7 @@ public class PropertiesFileUtil {
      * @return String
      */
     public static String getPropertiesStr(String name){
-        return properties==null ? null:properties.getProperty(name);
+        return PROPERTIES==null ? null:PROPERTIES.getProperty(name);
     }
 
     /**

@@ -6,7 +6,10 @@ import com.liteweb.container.ServletContainer;
 import java.nio.channels.Channel;
 import java.util.List;
 
-public class FTPService extends SocketService{
+/**
+ * @author Hone
+ */
+public class FtpService extends SocketService{
     @Override
     public Channel getChannel() {
         return null;
@@ -28,7 +31,7 @@ public class FTPService extends SocketService{
     }
 
     @Override
-    public Object Accept(Channel channel) {
+    public Object accept(Channel channel) {
         return null;
     }
 }

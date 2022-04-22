@@ -23,6 +23,7 @@ import java.util.Map;
 
 /**
  * 处理http请求，执行对应的行为
+ * @author Hone
  */
 public class HttpServletContainer extends ServletContainer{
     /**
@@ -32,84 +33,87 @@ public class HttpServletContainer extends ServletContainer{
      */
     @Override
     public void disposeMessage(WebServlet request, WebServlet response , WebFilter filter) {
-        HttpServletRequest http_request = (HttpServletRequest) request;
-        HttpServletResponse http_response = (HttpServletResponse) response;
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
         HttpFilter httpFilter=(HttpFilter) filter;
-        String requestURL=http_request.getRequestURI();
-        if(requestURL==null){
+        String requestUrl = httpRequest.getRequestUri();
+        if(requestUrl==null){
             return;
         }
-        if(requestURL.contains(".")){
+        if(requestUrl.contains(".")){
             try {
-                String lastName=requestURL.substring(requestURL.lastIndexOf(".")+1);
-                http_response.setOutputStream(ResponseUtil.responseResourceFile(requestURL));
-                http_response.setContentType(ResponseUtil.getFileContentType(lastName));
+                String lastName=requestUrl.substring(requestUrl.lastIndexOf(".")+1);
+                httpResponse.setOutputStream(ResponseUtil.responseResourceFile(requestUrl));
+                httpResponse.setContentType(ResponseUtil.getFileContentType(lastName));
                 if(ResponseUtil.isDownLoadFile(lastName)){
-                    String fileName=requestURL.substring(requestURL.lastIndexOf("/")+1);
-                    http_response.addHeader("Content-Disposition","attachement;filename=" + fileName);
+                    String fileName=requestUrl.substring(requestUrl.lastIndexOf("/")+1);
+                    httpResponse.addHeader("Content-Disposition","attachement;filename=" + fileName);
                 }
             }catch (Exception e){
-                http_response.setCode(HttpStatusCode.NOTFOUND.getCode());
+                httpResponse.setCode(HttpStatusCode.NOTFOUND.getCode());
             }
             return;
         }
         WebServlet webServlet = LiteWebContext.getInstance().getServletRegister()
-                .findByPath(http_request.getRequestURI());
+                .findByPath(httpRequest.getRequestUri());
         if(!(webServlet instanceof HttpServlet)){
-            http_response.setCode(HttpStatusCode.NOTFOUND.getCode());
+            httpResponse.setCode(HttpStatusCode.NOTFOUND.getCode());
             return;
         }
         if(httpFilter!=null){
-            httpFilter.doFilter(http_request,http_response);
+            httpFilter.doFilter(httpRequest,httpResponse);
         }
         if(httpFilter!=null&&httpFilter.release()){
             HttpServlet httpServlet = (HttpServlet) webServlet;
-            HttpMethodName me_name = HttpMethodName.getInstance(http_request.getMethod());
-            CookieContext cookieContext = http_request.getCookieContext();
+            HttpMethodName meName = HttpMethodName.getInstance(httpRequest.getMethod());
+            CookieContext cookieContext = httpRequest.getCookieContext();
             ServerSession serverSession = disposeSession(httpServlet,cookieContext==null ? new Cookie():
                     cookieContext.getCookie(RunTimeConstant.SESSION_KEY));
             if(serverSession!=null){
                 SimpleDateFormat format=new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
-                http_response.addHeader(HttpConstant.HEADER_SET_COOKIE,RunTimeConstant.SESSION_KEY+
-                        ServerConstant.EqualsStr +serverSession.getSessionID()+HttpConstant.HEADER_COOKIE_EXPIRES+
+                httpResponse.addHeader(HttpConstant.HEADER_SET_COOKIE,RunTimeConstant.SESSION_KEY+
+                        ServerConstant.END_STR +serverSession.getSessionId()+HttpConstant.HEADER_COOKIE_EXPIRES+
                         format.format(serverSession.getTimeOut()));
             }
-            realDispose(httpServlet,me_name,http_request,http_response);
+            realDispose(httpServlet,meName,httpRequest,httpResponse);
         }
     }
 
     /**
      * 直接执行
      * @param httpServlet 目标实体
-     * @param me_name HTTP方法名称
+     * @param meName HTTP方法名称
      * @param request 请求报文
      * @param response 响应报文
      */
-    public void realDispose(HttpServlet httpServlet,HttpMethodName me_name,HttpServletRequest request,HttpServletResponse response){
+    public void realDispose(HttpServlet httpServlet, HttpMethodName meName, HttpServletRequest request, HttpServletResponse response){
         //拦截器继续执行
-        if(me_name==null){
+        if(meName==null){
             response.setCode(HttpStatusCode.BAD.getCode());
             return;
         }
         httpServlet.init(request);
         try {
-            String name_aim=null;
-            switch (me_name){
+            String nameAim =null;
+            switch (meName){
                 case GET:
-                    name_aim="doGet";
+                    nameAim="doGet";
                     break;
                 case PUT:
-                    name_aim="doPut";
+                    nameAim="doPut";
                     break;
                 case POST:
-                    name_aim="doPost";
+                    nameAim="doPost";
                     break;
                 case DELETE:
-                    name_aim="doDelete";
+                    nameAim="doDelete";
+                    break;
+                default:
+                    response.setCode(HttpStatusCode.NOT_ALLOWED.getCode());
                     break;
             }
-            if(name_aim!=null){
-                doMethod(httpServlet,name_aim,request,response,HttpServletRequest.class,HttpServletResponse.class);
+            if(nameAim!=null){
+                doMethod(httpServlet,nameAim,request,response,HttpServletRequest.class,HttpServletResponse.class);
             }
         }catch (Error|Exception e){
             e.printStackTrace();
@@ -139,7 +143,7 @@ public class HttpServletContainer extends ServletContainer{
         Parameter parameter = method.getParameters()[0];
         EntityParameter entityParameter=parameter.getAnnotation(EntityParameter.class);
         if(entityParameter!=null){
-            String str=ResponseUtil.ByteArrayToString(request.getBodyStream());
+            String str=ResponseUtil.byteArrayToString(request.getBodyStream());
             request.setBodyEntity(JSONObject.parseObject(str,entityParameter.clazz()));
         }
         method.invoke(httpServlet, request,response);

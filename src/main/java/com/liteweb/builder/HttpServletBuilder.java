@@ -13,6 +13,9 @@ import java.nio.channels.Channel;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * @author Hone
+ */
 public class HttpServletBuilder extends ServletBuilder{
 
     public HttpServletBuilder(Channel channel){
@@ -33,7 +36,7 @@ public class HttpServletBuilder extends ServletBuilder{
             throw new RuntimeException("通信管道为空");
         }
         HttpServletRequest request=new HttpServletRequest();
-        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(RunTimeConfig.servlet_header_length);
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(RunTimeConfig.SERVLET_HEADER_LENGTH);
         readByteBuffer(request,byteBuffer);
         return request;
     }
@@ -53,14 +56,14 @@ public class HttpServletBuilder extends ServletBuilder{
             byte[] header = new byte[byteBuffer.remaining()];
             byteBuffer.get(header,0,header.length);
             String data=new String(header, request.getCharset());
+            if(data.isEmpty()){
+                throw new RuntimeException("数据包为空，断开连接");
+            }
             //读取请求头
             readHeader(data,request);
-            int body_splice_index=data.indexOf(ServerConstant.HttpNoneLineTag);
-            if(body_splice_index<0){
-                throw new RuntimeException("报文错误，缺少参数");
-            }
-            String bodyData=data.substring(body_splice_index);
-            if(resSize<RunTimeConfig.servlet_header_length){
+            int bodySpliceIndex =data.indexOf(ServerConstant.HTTP_NONE_LINE_TAG);
+            String bodyData=data.substring(bodySpliceIndex);
+            if(resSize<RunTimeConfig.SERVLET_HEADER_LENGTH){
                 //小于最大头部报文限制，无后续内容，设置请求体内容
                 if(!bodyData.isEmpty()){
                     outputStream.write(bodyData.getBytes(request.getCharset()));
@@ -89,17 +92,14 @@ public class HttpServletBuilder extends ServletBuilder{
      * @param request 请求实体
      */
     private void readHeader(String data, HttpServletRequest request){
-        int firstIndex=data.indexOf(ServerConstant.HttpNoneLineTag);
-        if(firstIndex<0){
-            throw new RuntimeException("报文错误，缺少参数");
-        }
+        int firstIndex=data.indexOf(ServerConstant.HTTP_NONE_LINE_TAG);
         String headerData=data.substring(0,firstIndex);
-        String[] filed_arr=headerData.split(ServerConstant.HttpLineTag);
+        String[] filedArr =headerData.split(ServerConstant.HTTP_LINE_TAG);
         boolean isFirstLine=true;
-        if (filed_arr.length < 2) {
+        if (filedArr.length < 2) {
             throw new RuntimeException("报文错误，缺少参数");
         }
-        for(String filed:filed_arr){
+        for(String filed:filedArr){
             if(isFirstLine){
                 isFirstLine=false;
                 //行首处理
@@ -124,13 +124,13 @@ public class HttpServletBuilder extends ServletBuilder{
         int loopReadSize;
         if(channel instanceof AsynchronousSocketChannel){
             //异步IO
-            AsynchronousSocketChannel asy_channel=(AsynchronousSocketChannel) channel;
+            AsynchronousSocketChannel asyChannel =(AsynchronousSocketChannel) channel;
             //等待返回结果
-            loopReadSize=asy_channel.read(byteBuffer).get();
+            loopReadSize=asyChannel.read(byteBuffer).get();
         }else if(channel instanceof SocketChannel){
             //同步IO
-            SocketChannel syn_channel=(SocketChannel) channel;
-            loopReadSize=syn_channel.read(byteBuffer);
+            SocketChannel synChannel =(SocketChannel) channel;
+            loopReadSize=synChannel.read(byteBuffer);
         }else{
             throw new RuntimeException("管道类型错误");
         }

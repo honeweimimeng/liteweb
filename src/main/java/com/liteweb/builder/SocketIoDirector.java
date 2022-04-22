@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 /**
  * 建造者组装部件
+ * @author Hone
  */
 public class SocketIoDirector {
     private static final Logger logger = LoggerFactory.createInfo("Service组建信息");

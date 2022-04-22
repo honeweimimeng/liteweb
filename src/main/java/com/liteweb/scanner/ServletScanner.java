@@ -4,6 +4,9 @@ import com.liteweb.constant.ConfFileConstant;
 import com.liteweb.exception.ServerException;
 import java.net.URL;
 
+/**
+ * @author Hone
+ */
 public abstract class ServletScanner {
     /**
      * 记载servlet
@@ -12,12 +15,17 @@ public abstract class ServletScanner {
     public void loadServlet(Class<?> clazz){
         ClazzScanner clazzScanner=ClazzScanner.getInstance();
         //扫描servlet,Filter等class文件
-        Class<?>[] servlets_clazz=clazzScanner.findAll(clazz);
-        for(Class<?> clazz_item:servlets_clazz){
-            if(!clazz_item.getName().equals(clazz.getName())){
-                register(clazz_item);
+        Class<?>[] servletsClazz =clazzScanner.findAll(clazz);
+        for(Class<?> clazzItem :servletsClazz){
+            if(!clazzItem.getName().equals(clazz.getName())){
+                register(clazzItem);
             }
         }
     }
-    abstract void register(Class<?> clazz_item);
+
+    /**
+     * 注册class
+     * @param clazzItem 获取到的class单体
+     */
+    abstract void register(Class<?> clazzItem);
 }

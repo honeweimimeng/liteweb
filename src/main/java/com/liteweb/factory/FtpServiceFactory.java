@@ -1,13 +1,16 @@
 package com.liteweb.factory;
 
-import com.liteweb.service.FTPService;
+import com.liteweb.service.FtpService;
 import com.liteweb.service.SocketService;
 
 import java.nio.channels.Channel;
 
-public class FTPServiceFactory extends ServiceFactory{
+/**
+ * @author Hone
+ */
+public class FtpServiceFactory extends ServiceFactory{
     @Override
     public SocketService production(Channel channel) {
-        return new FTPService();
+        return new FtpService();
     }
 }
