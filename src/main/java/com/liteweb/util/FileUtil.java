@@ -31,7 +31,7 @@ public class FileUtil {
      * @param file 根目录文件对象
      * @param list 结果列表
      */
-    private static void getFile(File file,List<String> list){
+    public static void getFile(File file,List<String> list){
         if(file.isDirectory()){
             File[] files=file.listFiles();
             if(files!=null){
@@ -45,4 +45,6 @@ public class FileUtil {
             }
         }
     }
+
+
 }

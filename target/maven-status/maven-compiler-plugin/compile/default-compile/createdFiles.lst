@@ -44,6 +44,7 @@ com\liteweb\connector\HttpServletConnector.class
 com\liteweb\container\HttpServletContainer.class
 com\liteweb\scanner\ServletRegisterScanner.class
 com\liteweb\scanner\ServletScanner.class
+com\liteweb\loader\HotLoopLoader.class
 com\liteweb\entity\CookieContext.class
 com\liteweb\scanner\ClazzScanner.class
 com\liteweb\config\ReadConfig.class
@@ -74,7 +75,6 @@ com\liteweb\exception\LoadPropertiesException.class
 com\liteweb\service\HttpService.class
 com\liteweb\factory\BaseServices$2.class
 com\liteweb\builder\HttpServletBuilder.class
-com\liteweb\LiteWebBootStrap$ServiceTask.class
 com\liteweb\connector\ServletConnector.class
 com\liteweb\pool\OperationModelPool.class
 com\liteweb\service\FtpService.class
@@ -91,3 +91,4 @@ com\liteweb\constant\ServerConstant.class
 com\liteweb\enums\HttpStatusCode.class
 com\liteweb\builder\AioSocketBuilder.class
 com\liteweb\context\LiteWebContext.class
+com\liteweb\loader\HotSpotClassLoader.class

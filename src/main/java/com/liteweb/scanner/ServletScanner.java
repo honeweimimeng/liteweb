@@ -27,5 +27,5 @@ public abstract class ServletScanner {
      * 注册class
      * @param clazzItem 获取到的class单体
      */
-    abstract void register(Class<?> clazzItem);
+    public abstract void register(Class<?> clazzItem);
 }

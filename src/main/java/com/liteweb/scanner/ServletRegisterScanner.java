@@ -18,7 +18,7 @@ public class ServletRegisterScanner extends ServletScanner{
      * @param clazzItem 单个字节码对象
      */
     @Override
-    void register(Class<?> clazzItem){
+    public void register(Class<?> clazzItem){
         LiteWebContext context=LiteWebContext.getInstance();
         Object instance;
         try {
