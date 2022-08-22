@@ -1,4 +1,4 @@
-# LiteWeb一个精巧的JAVA服务器组件
+# LiteWeb一个精巧的JAVAWeb服务容器
 
 #### 介绍
 一个支持BIO,NIO,AIO和TCP(Http)和UDP(SMTP,预留接口,后期更新)的JAVA语言Web服务器
