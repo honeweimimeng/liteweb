@@ -37,6 +37,7 @@ public class NioSocketBuilder extends SocketIoBuilder {
     /**
      * 非阻塞IO结合选择器,调用服务accept事件和读取事件
      * @param socketService socket服务
+     * @Warn Writeable的处理
      */
     @Override
     public void loadingIoSocket(SocketService socketService) {
